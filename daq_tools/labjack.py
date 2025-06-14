@@ -1,6 +1,8 @@
+from .core import DigitalAnalogIO
 import u3
 
-class LabJackU3LV:
+
+class LabJackU3LV(DigitalAnalogIO):
     '''
     Use LabJack to read and write from a single pin at a time.
     Supports Analog input (FIOs) and output (DACs), digital

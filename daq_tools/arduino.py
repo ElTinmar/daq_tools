@@ -1,3 +1,4 @@
+from .core import DigitalAnalogIO
 from pyfirmata import Arduino
 
 # NOTE can't use arduino to control PWM freq
