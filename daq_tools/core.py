@@ -3,11 +3,11 @@ from abc import ABC, abstractmethod
 class DigitalAnalogIO(ABC):
 
     @abstractmethod
-    def digitalRead(self, channel: int) -> float:
+    def digital_read(self, channel: int) -> float:
         pass
 
     @abstractmethod
-    def digitalWrite(self, channel: int, val: bool) -> None:
+    def digital_write(self, channel: int, val: bool) -> None:
         pass
 
     @abstractmethod
@@ -15,11 +15,11 @@ class DigitalAnalogIO(ABC):
         pass
         
     @abstractmethod
-    def analogRead(self, channel: int) -> float:
+    def analog_read(self, channel: int) -> float:
         pass
 
     @abstractmethod
-    def analogWrite(self, channel: int, val: float) -> None:
+    def analog_write(self, channel: int, val: float) -> None:
         pass
 
     @abstractmethod

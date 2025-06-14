@@ -1,7 +1,6 @@
 from .core import DigitalAnalogIO
 import u3
 
-
 class LabJackU3LV(DigitalAnalogIO):
     '''
     Use LabJack to read and write from a single pin at a time.
@@ -67,21 +66,21 @@ class LabJackU3LV(DigitalAnalogIO):
         
         self.device = u3.U3()
 
-    def analogWrite(self, channel: int, val: float) -> None:
+    def analog_write(self, channel: int, val: float) -> None:
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.channels['AnalogOutput'][channel], val)
 
-    def analogRead(self, channel: int) -> float:
+    def analog_read(self, channel: int) -> float:
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.FIO_ANALOG, channel**2) # set channel as analog
         return self.device.readRegister(self.channels['AnalogInput'][channel])
     
-    def digitalWrite(self, channel: int, val: bool):
+    def digital_write(self, channel: int, val: bool):
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.FIO_ANALOG, 0) # set channel as digital
         self.device.writeRegister(self.channels['DigitalInputOutput'][channel], val)
 
-    def digitalRead(self, channel: int) -> float:
+    def digital_read(self, channel: int) -> float:
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.FIO_ANALOG, 0) # set channel as digital
         return self.device.readRegister(self.channels['DigitalInputOutput'][channel])
