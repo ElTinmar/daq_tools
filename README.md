@@ -36,13 +36,32 @@ pip install git+https://github.com/ElTinmar/daq_tools.git@main
 
 ## Example
 
+Print available boards and serial ports
+
+```python
+from daq_tools import Arduino_DAQ
+print(Arduino_DAQ.list_boards())
+```
+
+Turn on and off digital pin 
 ```python
 import time
 from daq_tools import Arduino_DAQ
 
-Arduino_DAQ.list_boards()
 daq = Arduino_DAQ('/dev/ttyUSB0')
 daq.digital_write(11, True)
 time.sleep(1)
 daq.digital_write(11, False)
+daq.close()
+```
+
+Alternatively you can use a context manager
+```python
+import time
+from daq_tools import Arduino_DAQ
+
+with Arduino_DAQ('/dev/ttyUSB0') as daq:
+    daq.digital_write(11, True)
+    time.sleep(1)
+    daq.digital_write(11, False)
 ```

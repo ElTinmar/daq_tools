@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+# maybe add counter, timer
+
 class DAQ(ABC):
 
     @abstractmethod
