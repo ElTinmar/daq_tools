@@ -42,7 +42,7 @@ from daq_tools import Arduino_DAQ
 
 Arduino_DAQ.list_boards()
 daq = Arduino_DAQ('/dev/ttyUSB0')
-daq.digital_write(13, True)
+daq.digital_write(11, True)
 time.sleep(1)
-daq.digital_write(13, False)
+daq.digital_write(11, False)
 ```

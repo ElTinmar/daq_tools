@@ -76,10 +76,12 @@ class Arduino_DAQ(DAQ):
         return boards
 
 if __name__ == "__main__":
+    
+    import time
 
-    # Example usage
     Arduino_DAQ.list_boards()
     daq = Arduino_DAQ('/dev/ttyUSB0')  
-    daq.digital_write(13, True) 
-    print(daq.digital_read(13))  
+    daq.digital_write(11, True) 
+    time.sleep(1)
+    daq.digital_write(11, False)
     daq.close()
