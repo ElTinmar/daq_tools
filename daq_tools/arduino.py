@@ -53,7 +53,7 @@ class Arduino_DAQ(DAQ):
         self.device.exit()
 
     @classmethod
-    def list_available_boards(cls):
+    def list_boards(cls):
         ports = list_ports.comports()
 
         for port in ports:
@@ -65,7 +65,7 @@ class Arduino_DAQ(DAQ):
 if __name__ == "__main__":
 
     # Example usage
-    daq = Arduino_DAQ('/dev/ttyACM0')  
+    daq = Arduino_DAQ('/dev/ttyUSB0')  
     daq.digital_write(13, True) 
     print(daq.digital_read(13))  
     daq.close()
