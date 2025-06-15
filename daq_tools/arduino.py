@@ -1,7 +1,7 @@
-from .core import DAQ
+from .core import DAQ, DAQReadError
 from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
-from typing import List, Optional
+from typing import List, Optional, NamedTuple
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,6 +13,10 @@ SUPPORTED_ARDUINO_BOARDS = {
     ("2341", "0058"), # Arduino Nano Every (uses native USB CDC)
     ("2341", "0001"), # Uno Rev2 or variants
 }
+
+class ArduinoBoardInfo(NamedTuple):
+    device: str
+    description: str
 
 class Arduino_DAQ(DAQ):
 
@@ -27,7 +31,7 @@ class Arduino_DAQ(DAQ):
             logger.error(f"Failed to connect to Arduino board: {e}")
             raise
 
-    def digital_read(self, channel: int) -> Optional[float]:
+    def digital_read(self, channel: int) -> float:
         try:
             pin = self.device.digital[channel]
         except IndexError:
@@ -35,7 +39,8 @@ class Arduino_DAQ(DAQ):
         pin.mode = INPUT         
         val = pin.read()
         if val is None:
-            logger.warning(f"Read from digital channel {channel} returned None.")  
+            logger.error(f"Read from digital channel {channel} returned None.")  
+            raise DAQReadError(f"Failed to read from digital channel {channel}.")
         return val
 
     def digital_write(self, channel: int, val: bool) -> None:
@@ -61,7 +66,7 @@ class Arduino_DAQ(DAQ):
         pin.mode = PWM
         pin.write(duty_cycle)
         
-    def analog_read(self, channel: int) -> Optional[float]:
+    def analog_read(self, channel: int) -> float:
         try:
             pin = self.device.analog[channel]
         except IndexError:
@@ -69,7 +74,8 @@ class Arduino_DAQ(DAQ):
         pin.enable_reporting()
         val = pin.read()
         if val is None:
-            logger.warning(f"Read from analog channel {channel} returned None.")
+            logger.error(f"Read from analog channel {channel} returned None.")
+            raise DAQReadError(f"Failed to read from analog channel {channel}.")
         return val
 
     def analog_write(self, channel: int, val: float) -> None:
@@ -86,14 +92,14 @@ class Arduino_DAQ(DAQ):
         self.close()
 
     @classmethod
-    def list_boards(cls) -> List:
+    def list_boards(cls) -> List[ArduinoBoardInfo]:
         ports = list_ports.comports()
         boards = []
         for port in ports:
             vid = f"{port.vid:04x}" if port.vid else None
             pid = f"{port.pid:04x}" if port.pid else None
             if (vid, pid) in SUPPORTED_ARDUINO_BOARDS:
-                boards.append((port.device, port.description))
+                boards.append(ArduinoBoardInfo(port.device, port.description))
 
         logger.debug(f"Found {len(boards)} supported Arduino board(s).")
         return boards
@@ -109,8 +115,10 @@ if __name__ == "__main__":
 
     boards = Arduino_DAQ.list_boards()
     print(boards)
+    if not boards:
+        exit(1)
 
-    daq = Arduino_DAQ(boards[0][0])
+    daq = Arduino_DAQ(boards[0].device)
     daq.digital_write(11, True)
     time.sleep(1)
     daq.digital_write(11, False)

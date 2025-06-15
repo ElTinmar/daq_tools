@@ -3,10 +3,14 @@ from typing import Optional
 
 # maybe add counter, timer
 
+class DAQReadError(Exception):
+    """Exception raised for errors in reading from the DAQ device."""
+    pass
+
 class DAQ(ABC):
 
     @abstractmethod
-    def digital_read(self, channel: int) -> Optional[float]:
+    def digital_read(self, channel: int) -> float:
         pass
 
     @abstractmethod
@@ -18,7 +22,7 @@ class DAQ(ABC):
         pass
         
     @abstractmethod
-    def analog_read(self, channel: int) -> Optional[float]:
+    def analog_read(self, channel: int) -> float:
         pass
 
     @abstractmethod
