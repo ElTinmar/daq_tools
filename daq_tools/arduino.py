@@ -70,13 +70,12 @@ class Arduino_DAQ(DAQ):
             vid = f"{port.vid:04x}" if port.vid else None
             pid = f"{port.pid:04x}" if port.pid else None
             if (vid, pid) in SUPPORTED_ARDUINO_BOARDS:
-                print(port.device, port.description)
                 boards.append((port.device, port.description))
 
         return boards
 
 if __name__ == "__main__":
-    
+
     import time
 
     Arduino_DAQ.list_boards()
