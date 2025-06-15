@@ -17,3 +17,11 @@ conda activate daq_tools
 ```bash
 pip install git+https://github.com/ElTinmar/daq_tools.git@main
 ```
+
+## Example
+
+```python
+
+from daq_tools import Arduino_DAQ
+daq = Arduino_DAQ()
+```

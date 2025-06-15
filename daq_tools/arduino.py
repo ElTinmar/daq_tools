@@ -8,6 +8,8 @@ class Arduino_DAQ(DAQ):
 
     def __init__(self, board_id: str) -> None:
         self.device = Arduino(board_id)
+        # report Board model
+        print(f"Connected to Arduino board: {self.device.name}")
 
     def digital_read(self, channel: int) -> float:
         pin = self.device.get_pin(f'd:{channel}:i')       
