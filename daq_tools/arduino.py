@@ -1,6 +1,7 @@
 from .core import DAQ
 from pyfirmata import Arduino
 from serial.tools import list_ports
+from typing import List
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -33,7 +34,12 @@ class Arduino_DAQ(DAQ):
         self.device.taken['digital'][channel] = False
 
     def pwm(self, channel: int, duty_cycle: float, frequency: float) -> None:
-        # frequency is ignored
+        """
+        Set PWM on a pin with a duty cycle (0.0 to 1.0) and frequency.
+        Note: Arduino's PWM frequency is fixed and cannot be changed via pyfirmata.
+        The frequency parameter is ignored in this implementation.
+        """
+        
         pin = self.device.get_pin(f'd:{channel}:p')
         pin.write(duty_cycle)
         self.device.taken['digital'][channel] = False
@@ -45,26 +51,34 @@ class Arduino_DAQ(DAQ):
         return val
 
     def analog_write(self, channel: int, val: float) -> None:
-        # Can not do analog write, the arduino does not have a DAC
-        print("""The arduino does not have a DAC, no analog writing. 
-              Consider hooking a capacitor on a PWM output instead""")
+        raise NotImplementedError("Arduino does not support analog write, use PWM instead.")
 
     def close(self) -> None:
         self.device.exit()
 
-    @classmethod
-    def list_boards(cls):
-        ports = list_ports.comports()
+    def __enter__(self):   
+        return self
 
+    def __exit__(self):
+        self.close()
+
+    @classmethod
+    def list_boards(cls) -> List:
+        ports = list_ports.comports()
+        boards = []
         for port in ports:
             vid = f"{port.vid:04x}" if port.vid else None
             pid = f"{port.pid:04x}" if port.pid else None
             if (vid, pid) in SUPPORTED_ARDUINO_BOARDS:
                 print(port.device, port.description)
+                boards.append((port.device, port.description))
+
+        return boards
 
 if __name__ == "__main__":
 
     # Example usage
+    Arduino_DAQ.list_boards()
     daq = Arduino_DAQ('/dev/ttyUSB0')  
     daq.digital_write(13, True) 
     print(daq.digital_read(13))  

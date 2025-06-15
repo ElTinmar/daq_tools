@@ -15,6 +15,10 @@ sudo usermod -aG dialout $USER
 
 Reboot to make sure changes are applied
 
+### Dependencies
+
+Labjack exodriver
+
 ### Conda
 
 ```bash
