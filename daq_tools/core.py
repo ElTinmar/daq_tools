@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 # maybe add counter, timer
 
 class DAQ(ABC):
 
     @abstractmethod
-    def digital_read(self, channel: int) -> float:
+    def digital_read(self, channel: int) -> Optional[float]:
         pass
 
     @abstractmethod
@@ -13,11 +14,11 @@ class DAQ(ABC):
         pass
 
     @abstractmethod
-    def pwm(self, channel: int, duty_cycle: float, frequency: float) -> None:
+    def pwm(self, channel: int, duty_cycle: float, frequency: Optional[float]) -> None:
         pass
         
     @abstractmethod
-    def analog_read(self, channel: int) -> float:
+    def analog_read(self, channel: int) -> Optional[float]:
         pass
 
     @abstractmethod

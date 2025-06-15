@@ -17,6 +17,9 @@ SUPPORTED_ARDUINO_BOARDS = {
 class Arduino_DAQ(DAQ):
 
     def __init__(self, board_id: str) -> None:
+        
+        super().__init__()
+
         try:
             self.device = Arduino(board_id)
             logger.info(f"Connected to Arduino board: {self.device.name}")
@@ -24,7 +27,7 @@ class Arduino_DAQ(DAQ):
             logger.error(f"Failed to connect to Arduino board: {e}")
             raise
 
-    def digital_read(self, channel: int) -> float:
+    def digital_read(self, channel: int) -> Optional[float]:
         try:
             pin = self.device.digital[channel]
         except IndexError:
@@ -35,7 +38,7 @@ class Arduino_DAQ(DAQ):
             logger.warning(f"Read from digital channel {channel} returned None.")  
         return val
 
-    def digital_write(self, channel: int, val: bool):
+    def digital_write(self, channel: int, val: bool) -> None:
         try:
             pin = self.device.digital[channel]
         except IndexError:
@@ -58,7 +61,7 @@ class Arduino_DAQ(DAQ):
         pin.mode = PWM
         pin.write(duty_cycle)
         
-    def analog_read(self, channel: int) -> float:
+    def analog_read(self, channel: int) -> Optional[float]:
         try:
             pin = self.device.analog[channel]
         except IndexError:
@@ -66,7 +69,7 @@ class Arduino_DAQ(DAQ):
         pin.enable_reporting()
         val = pin.read()
         if val is None:
-            logger.warning(f"Read from digital channel {channel} returned None.")  
+            logger.warning(f"Read from analog channel {channel} returned None.")
         return val
 
     def analog_write(self, channel: int, val: float) -> None:
@@ -92,6 +95,7 @@ class Arduino_DAQ(DAQ):
             if (vid, pid) in SUPPORTED_ARDUINO_BOARDS:
                 boards.append((port.device, port.description))
 
+        logger.debug(f"Found {len(boards)} supported Arduino board(s).")
         return boards
 
 if __name__ == "__main__":
