@@ -1,9 +1,10 @@
 from .core import DAQ
-from pyfirmata import Arduino
+from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
-from typing import List
+from typing import List, Optional
 import logging
-logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 SUPPORTED_ARDUINO_BOARDS = {
     ("2341", "0043"), # Official Arduino Uno
@@ -13,47 +14,66 @@ SUPPORTED_ARDUINO_BOARDS = {
     ("2341", "0001"), # Uno Rev2 or variants
 }
 
-# NOTE can't use arduino to control PWM freq
 class Arduino_DAQ(DAQ):
-    # PWM frequency is around 490Hz on most pins,
-    # and 980Hz on pin 5 and 6
 
     def __init__(self, board_id: str) -> None:
-        self.device = Arduino(board_id)
-        logging.info(f"Connected to Arduino board: {self.device.name}")
+        try:
+            self.device = Arduino(board_id)
+            logger.info(f"Connected to Arduino board: {self.device.name}")
+        except Exception as e:
+            logger.error(f"Failed to connect to Arduino board: {e}")
+            raise
 
     def digital_read(self, channel: int) -> float:
-        pin = self.device.get_pin(f'd:{channel}:i')       
-        val = pin.read()  
-        self.device.taken['digital'][channel] = False
+        try:
+            pin = self.device.digital[channel]
+        except IndexError:
+            raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.digital) - 1}.")
+        pin.mode = INPUT         
+        val = pin.read()
+        if val is None:
+            logger.warning(f"Read from digital channel {channel} returned None.")  
         return val
 
     def digital_write(self, channel: int, val: bool):
-        pin = self.device.get_pin(f'd:{channel}:o')
+        try:
+            pin = self.device.digital[channel]
+        except IndexError:
+            raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.digital) - 1}.")
+        pin.mode = OUTPUT
         pin.write(val)
-        self.device.taken['digital'][channel] = False
 
-    def pwm(self, channel: int, duty_cycle: float, frequency: float) -> None:
+    def pwm(self, channel: int, duty_cycle: float, frequency: Optional[float] = None) -> None:
         """
-        Set PWM on a pin with a duty cycle (0.0 to 1.0) and frequency.
-        Note: Arduino's PWM frequency is fixed and cannot be changed via pyfirmata.
-        The frequency parameter is ignored in this implementation.
+        Set PWM on a pin with a duty cycle (0.0 to 1.0).
+        Note: Arduino's PWM frequency cannot be changed via pyfirmata.
+        By default, PWM frequency is around 490Hz on most pins, and 980Hz on pin 5 and 6.
+        The frequency parameter is ignored.
         """
-        
-        pin = self.device.get_pin(f'd:{channel}:p')
+
+        try:
+            pin = self.device.digital[channel]
+        except IndexError:
+            raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.digital) - 1}.")
+        pin.mode = PWM
         pin.write(duty_cycle)
-        self.device.taken['digital'][channel] = False
         
     def analog_read(self, channel: int) -> float:
-        pin = self.device.get_pin(f'a:{channel}:i')
+        try:
+            pin = self.device.analog[channel]
+        except IndexError:
+            raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.analog) - 1}.")
+        pin.enable_reporting()
         val = pin.read()
-        self.device.taken['analog'][channel] = False
+        if val is None:
+            logger.warning(f"Read from digital channel {channel} returned None.")  
         return val
 
     def analog_write(self, channel: int, val: float) -> None:
         raise NotImplementedError("Arduino does not support analog write, use PWM instead.")
 
     def close(self) -> None:
+        logger.info("Closing Arduino connection.")
         self.device.exit()
 
     def __enter__(self):   
@@ -77,10 +97,17 @@ class Arduino_DAQ(DAQ):
 if __name__ == "__main__":
 
     import time
+    
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
 
-    Arduino_DAQ.list_boards()
-    daq = Arduino_DAQ('/dev/ttyUSB0')  
-    daq.digital_write(11, True) 
+    boards = Arduino_DAQ.list_boards()
+    print(boards)
+
+    daq = Arduino_DAQ(boards[0][0])
+    daq.digital_write(11, True)
     time.sleep(1)
     daq.digital_write(11, False)
     daq.close()
