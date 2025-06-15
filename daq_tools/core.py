@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class DigitalAnalogIO(ABC):
+class DAQ(ABC):
 
     @abstractmethod
     def digital_read(self, channel: int) -> float:

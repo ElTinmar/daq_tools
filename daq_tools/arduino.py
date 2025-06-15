@@ -1,9 +1,9 @@
-from .core import DigitalAnalogIO
+from .core import DAQ
 from pyfirmata import Arduino
 
 # NOTE can't use arduino to control PWM freq
-class ArduinoDAQ:
-    # PWM frequency is around 490Hz on most pins, 
+class Arduino_DAQ(DAQ):
+    # PWM frequency is around 490Hz on most pins,
     # and 980Hz on pin 5 and 6
 
     def __init__(self, board_id: str) -> None:
