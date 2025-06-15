@@ -85,12 +85,6 @@ class Arduino_DAQ(DAQ):
         logger.info("Closing Arduino connection.")
         self.device.exit()
 
-    def __enter__(self):   
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
-
     @classmethod
     def list_boards(cls) -> List[ArduinoBoardInfo]:
         ports = list_ports.comports()

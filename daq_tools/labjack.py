@@ -134,3 +134,4 @@ class LabJack_U3LV_DAQ(DAQ):
 
     def close(self) -> None:
         self.device.close()
+
