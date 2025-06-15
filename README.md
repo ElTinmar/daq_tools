@@ -13,6 +13,8 @@ If not add yourself to group:
 sudo usermod -aG dialout $USER
 ```
 
+Reboot to make sure changes are applied
+
 ### Conda
 
 ```bash
