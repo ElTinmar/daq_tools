@@ -7,3 +7,4 @@ dependencies:
 - ipython
 - labjackpython
 - pyfirmata
+- pyserial

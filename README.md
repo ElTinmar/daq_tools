@@ -3,6 +3,16 @@ common interface for data acquisition hardware control
 
 ## Installation
 
+On linux make sure you're part of group dialout:
+```bash
+groups | grep dialout
+```
+
+If not add yourself to group:
+```bash
+sudo usermod -aG dialout $USER
+```
+
 ### Conda
 
 ```bash
