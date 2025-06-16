@@ -71,7 +71,7 @@ class LabJack_U3_DAQ(DAQ):
     def __init__(self, serial_number: int) -> None:
         
         self.device = u3.U3(serial = serial_number)
-        logger.info(f"Connected to LabJack U3-LV S/N: {self.device.serialNumber}")
+        logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
 
     def analog_write(self, channel: int, val: float) -> None:
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
@@ -79,7 +79,9 @@ class LabJack_U3_DAQ(DAQ):
 
     def analog_read(self, channel: int) -> float:
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
-        self.device.writeRegister(self.FIO_ANALOG, channel**2) # set channel as analog
+        # Set the FIO pin to analog mode using a bitmask
+        bitmask = 1 << channel
+        self.device.writeRegister(self.FIO_ANALOG, bitmask) # set channel as analog
         return self.device.readRegister(self.channels['AnalogInput'][channel])
     
     def digital_write(self, channel: int, val: bool):
@@ -110,7 +112,7 @@ class LabJack_U3_DAQ(DAQ):
             div = 2**16
 
         # make sure digital value is 0
-        self.digital_write(channel,0)
+        self.digital_write(channel, 0)
 
         if duty_cycle == 0:
             # PWM can't fully turn off. Use digital write instead
@@ -133,7 +135,7 @@ class LabJack_U3_DAQ(DAQ):
         # Pin offset (FIO) 
         self.device.writeRegister(self.TIMER_PIN_OFFSET, channel) 
 
-        # 16 bit value for duty cycle
+        # 16 bit value for duty cycle (8bit timer mode: LSB is ignored)
         value = int(65535*(1-duty_cycle))
 
         # Configure the timer for 16-bit PWM
@@ -178,8 +180,22 @@ if __name__ == "__main__":
     if not boards:
         exit(1)
 
-    daq = LabJack_U3_DAQ(boards[0].id)
-    daq.digital_write(2, True)
-    time.sleep(5)
-    daq.digital_write(2, False)
-    daq.close()
+    with LabJack_U3_DAQ(boards[0].id) as daq:
+        
+        daq.digital_write(2, True)
+        time.sleep(2)
+        daq.digital_write(2, False)
+
+        for j in range(5):
+            for i in range(100):
+                daq.pwm(4, i/100, 1000)
+                time.sleep(1/100)
+            daq.pwm(4,0,1000)
+        
+        daq.analog_write(0, 1.75)
+        time.sleep(2)
+        daq.analog_write(0, 0)
+
+
+
+
