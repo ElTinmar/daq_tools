@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractclassmethod
 from typing import Optional, NamedTuple, List
 
 class BoardInfo(NamedTuple):
@@ -42,12 +42,10 @@ class DAQ(ABC):
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
-    @abstractmethod
-    @classmethod
+    @abstractclassmethod
     def list_boards(cls) -> List[BoardInfo]:
         pass
 
-    @abstractmethod
-    @classmethod
+    @abstractclassmethod
     def auto_connect(cls) -> "DAQ":
         pass
