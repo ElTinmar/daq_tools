@@ -143,7 +143,7 @@ class LabJack_U3_DAQ(DAQ):
 
     def close(self) -> None:
         # TODO make sure you turn off everything?
-        logger.info("Closing Arduino connection.")
+        logger.info("Closing LabJack connection.")
         self.device.close()
 
     @classmethod
