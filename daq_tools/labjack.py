@@ -6,6 +6,9 @@ from typing import NamedTuple, List
 import logging
 logger = logging.getLogger(__name__)
 
+# https://github.com/labjack/LabJackPython
+# https://support.labjack.com/docs/ud-modbus-old-deprecated
+
 class LabJack_U3_DAQ(DAQ):
     '''
     Use LabJack to read and write from a single pin at a time.
