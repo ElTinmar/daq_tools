@@ -124,11 +124,13 @@ if __name__ == "__main__":
     with Arduino_DAQ(boards[0].id) as daq:
 
         # digital
+        print('digital write')
         daq.digital_write(DIGITAL_PIN, True)
         time.sleep(2)
         daq.digital_write(DIGITAL_PIN, False)
 
         # pwm
+        print('pwm')
         for j in range(5):
             for i in range(100):
                 daq.pwm(PWM_PIN, i/100)
@@ -136,8 +138,10 @@ if __name__ == "__main__":
             daq.pwm(PWM_PIN,0)
 
         # two digital channels
+        print('digital write two channels')
         daq.digital_write(DIGITAL_PIN, True)
         daq.digital_write(PWM_PIN, True)
         time.sleep(2)
-        daq.digital_write(DIGITAL_PIN, False)
-        daq.digital_write(PWM_PIN, False)
+
+        # turn off on close
+
