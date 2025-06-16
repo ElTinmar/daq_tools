@@ -11,6 +11,20 @@ class DAQReadError(Exception):
     pass
 
 class DAQ(ABC):
+    """
+    Abstract base class defining a common interface for Data Acquisition (DAQ) devices.
+
+    This interface supports basic digital and analog I/O operations, including reading and writing
+    digital signals, PWM output, and analog input/output. It is designed primarily for simple use cases 
+    involving one channel accessed at a time (single-channel usage). Complex multi-channel or 
+    concurrent operations are not explicitly supported by this interface.
+
+    Subclasses should implement the hardware-specific logic for each abstract method.
+
+    Context management is supported to allow usage with 'with' statements, ensuring proper resource cleanup.
+
+    Class methods `list_boards` and `auto_connect` facilitate device discovery and automatic connection.
+    """
 
     @abstractmethod
     def digital_read(self, channel: int) -> float:
@@ -34,6 +48,7 @@ class DAQ(ABC):
 
     @abstractmethod
     def close(self) -> None:
+        """Release any resources held by the DAQ device."""
         pass
 
     def __enter__(self):   
@@ -44,8 +59,10 @@ class DAQ(ABC):
 
     @abstractclassmethod
     def list_boards(cls) -> List[BoardInfo]:
+        """Return a list of available DAQ boards connected to the system."""
         pass
 
     @abstractclassmethod
     def auto_connect(cls) -> "DAQ":
+        """Automatically detect and connect to a DAQ device, returning an instance."""
         pass
