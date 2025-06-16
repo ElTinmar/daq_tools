@@ -67,6 +67,7 @@ class LabJack_U3_DAQ(DAQ):
     TIMER_MODE_8BIT = 1
 
     CLOCK: int = 48 # I'm only using the 48MHz clock with divisors enabled 
+    CLOCK_BASE_48MHZ_DIV = 6
 
     def __init__(self, serial_number: int) -> None:
         
@@ -86,7 +87,7 @@ class LabJack_U3_DAQ(DAQ):
     
     def digital_write(self, channel: int, val: bool):
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
-        self.device.writeRegister(self.FIO_ANALOG, 0) # set channel as digital
+        self.device.writeRegister(self.FIO_ANALOG, 0) # set all channels as digital
         self.device.writeRegister(self.channels['DigitalInputOutput'][channel], val)
 
     def digital_read(self, channel: int) -> float:
@@ -126,8 +127,8 @@ class LabJack_U3_DAQ(DAQ):
         # enable Timer0 
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 1)
 
-        # set the timer clock to 48 MHz with divisor (correspond to register value of 6)
-        self.device.writeRegister(self.TIMER_CLOCK_BASE, 6)
+        # set the timer clock to 48 MHz with divisor
+        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE_48MHZ_DIV)
 
         # set divisor
         self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, timer_clock_divisor)
