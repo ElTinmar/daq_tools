@@ -186,6 +186,11 @@ class LabJack_U3_DAQ(DAQ):
        
 if __name__ == "__main__":
 
+
+    DIGITAL_PIN1 = 2
+    DIGITAL_PIN2 = 0
+    PWM_PIN = 4
+
     import time
     
     logging.basicConfig(
@@ -200,19 +205,34 @@ if __name__ == "__main__":
 
     with LabJack_U3_DAQ(boards[0].id) as daq:
         
-        daq.digital_write(2, True)
+        # digital
+        daq.digital_write(DIGITAL_PIN1, True)
         time.sleep(2)
-        daq.digital_write(2, False)
+        daq.digital_write(DIGITAL_PIN1, False)
 
+        # pwm
         for j in range(5):
             for i in range(100):
-                daq.pwm(4, i/100, 1000)
+                daq.pwm(PWM_PIN, i/100, 1000)
                 time.sleep(1/100)
-            daq.pwm(4,0,1000)
+            daq.pwm(PWM_PIN,0,1000)
 
+        # analog
         daq.analog_write(0, 1.75)
         time.sleep(2)
         daq.analog_write(0, 0)
+
+        # two digital channels
+        daq.digital_write(DIGITAL_PIN1, True)
+        daq.digital_write(DIGITAL_PIN2, True)
+        time.sleep(2)
+        daq.digital_write(DIGITAL_PIN1, False)
+        daq.digital_write(DIGITAL_PIN2, False)
+
+        # digital write on pwm pin
+        daq.digital_write(PWM_PIN, True)
+        time.sleep(2)
+        daq.digital_write(PWM_PIN, False)
 
 
 

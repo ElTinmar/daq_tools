@@ -106,6 +106,9 @@ class Arduino_DAQ(DAQ):
         
 if __name__ == "__main__":
 
+    DIGITAL_PIN = 4
+    PWM_PIN = 3
+
     import time
     
     logging.basicConfig(
@@ -118,8 +121,23 @@ if __name__ == "__main__":
     if not boards:
         exit(1)
 
-    daq = Arduino_DAQ(boards[0].id)
-    daq.digital_write(11, True)
-    time.sleep(1)
-    daq.digital_write(11, False)
-    daq.close()
+    with Arduino_DAQ(boards[0].id) as daq:
+
+        # digital
+        daq.digital_write(DIGITAL_PIN, True)
+        time.sleep(2)
+        daq.digital_write(DIGITAL_PIN, False)
+
+        # pwm
+        for j in range(5):
+            for i in range(100):
+                daq.pwm(PWM_PIN, i/100)
+                time.sleep(1/100)
+            daq.pwm(PWM_PIN,0)
+
+        # two digital channels
+        daq.digital_write(DIGITAL_PIN, True)
+        daq.digital_write(PWM_PIN, True)
+        time.sleep(2)
+        daq.digital_write(DIGITAL_PIN, False)
+        daq.digital_write(PWM_PIN, False)
