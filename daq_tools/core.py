@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional, NamedTuple, List
 
+# TODO: set default pin state on startup
+# TODO: set default pin state on close
+
 class BoardInfo(NamedTuple):
     id: int
     name: str
