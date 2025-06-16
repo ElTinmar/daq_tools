@@ -26,10 +26,33 @@ sudo ./install.sh
 
 ### Load Firmata Sketch on the Arduino
 
+Install the arduino IDE
+
+```bash
+sudo add-apt-repository universe
+sudo apt install libfuse2
+echo 'SUBSYSTEMS=="usb", ATTRS{idVendor}=="2341", GROUP="plugdev", MODE="0666"' | sudo tee /etc/udev/rules.d/99-arduino.rules
+```
+
+Get appimage here: https://github.com/arduino/arduino-ide/releases/latest
+
+```bash
+chmod +x arduino-ide_2.3.6_Linux_64bit.AppImage
+./arduino-ide_2.3.6_Linux_64bit.AppImage --no-sandbox
+```
+
 The sketch is available in the Arduino IDE’s built-in examples. To open it, access the File menu, then Examples, followed by Firmata, and finally StandardFirmata.
 1. Plug the USB cable into the PC.  
 2. Select the appropriate board and port on the IDE.  
 3. Press Upload.  
+
+if you see the following error message
+
+```bash
+avrdude: jtagmkII_getsync(): sign-on command: status -1
+```
+
+try setting baudrate to 1200 in serial monitor and restart upload
 
 ### Conda
 
