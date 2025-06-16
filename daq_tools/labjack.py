@@ -6,7 +6,6 @@ from typing import NamedTuple, List
 import logging
 logger = logging.getLogger(__name__)
 
-
 class LabJack_U3_DAQ(DAQ):
     '''
     Use LabJack to read and write from a single pin at a time.
