@@ -66,15 +66,18 @@ class LabJack_U3_DAQ(DAQ):
     TIMER_MODE_16BIT = 0
     TIMER_MODE_8BIT = 1
 
-    CLOCK: int = 48 # I'm only using the 48MHz clock with divisors enabled 
+    class Clock(NamedTuple):
+        register: int
+        frequency_Hz: int
+
     CLOCK_BASE = {
-        '4MHz': 0,
-        '12MHz': 1,
-        '48MHz(Default)': 2,
-        '1MHz/Divisor': 3,
-        '4MHz/Divisor': 4,
-        '12MHz/Divisor': 5,
-        '48MHz/Divisor': 6,
+        '4MHz': Clock(0, 4_000_000),
+        '12MHz': Clock(1, 12_000_000),
+        '48MHz(Default)': Clock(2, 48_000_000),
+        '1MHz/Divisor': Clock(3, 1_000_000),
+        '4MHz/Divisor': Clock(4, 4_000_000),
+        '12MHz/Divisor': Clock(5, 12_000_000),
+        '48MHz/Divisor': Clock(6, 48_000_000)
     }
 
     def __init__(self, serial_number: int) -> None:
@@ -85,8 +88,8 @@ class LabJack_U3_DAQ(DAQ):
     def analog_write(self, channel: int, val: float) -> None:
         # DAC uses PWM internally. Reset clock to default settings to avoid interactions
         # with PWM
-        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)'])
-        self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, 0) # divisor should be disabled already, but adding 
+        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)'].register)
+        self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, 0) # just to be extra careful
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.channels['AnalogOutput'][channel], val)
 
@@ -132,15 +135,15 @@ class LabJack_U3_DAQ(DAQ):
             # and return
             return
         
-        # divisor should be in the range 0-255, 0 corresponds to a divisor of 256
-        timer_clock_divisor = int( (self.CLOCK * 1e6)/(frequency * div) )
-        if timer_clock_divisor == 256: timer_clock_divisor = 0 
-        
         # enable Timer0 
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 1)
 
         # set the timer clock to 48 MHz with divisor
-        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz/Divisor'])
+        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz/Divisor'].register)
+
+        # divisor should be in the range 0-255, 0 corresponds to a divisor of 256
+        timer_clock_divisor = int(self.CLOCK_BASE['48MHz/Divisor'].frequency_Hz/(frequency * div))
+        if timer_clock_divisor == 256: timer_clock_divisor = 0 
 
         # set divisor
         self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, timer_clock_divisor)
@@ -204,9 +207,7 @@ if __name__ == "__main__":
                 daq.pwm(4, i/100, 1000)
                 time.sleep(1/100)
             daq.pwm(4,0,1000)
-        
-        # FIXME: settings pwn freq to 1000Hz breaks analog write
-        # but 10_000 is fine
+
         daq.analog_write(0, 1.75)
         time.sleep(2)
         daq.analog_write(0, 0)
