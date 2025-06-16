@@ -1,7 +1,7 @@
 from .core import DAQ, DAQReadError, BoardInfo
 from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
-from typing import List, Optional, NamedTuple
+from typing import List, Optional
 import logging
 logger = logging.getLogger(__name__)
 
