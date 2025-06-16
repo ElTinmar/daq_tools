@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, NamedTuple, List
+
+class BoardInfo(NamedTuple):
+    id: int
+    name: str
 
 # maybe add counter, timer
-
 class DAQReadError(Exception):
     """Exception raised for errors in reading from the DAQ device."""
     pass
@@ -38,3 +41,13 @@ class DAQ(ABC):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
+
+    @abstractmethod
+    @classmethod
+    def list_boards(cls) -> List[BoardInfo]:
+        pass
+
+    @abstractmethod
+    @classmethod
+    def auto_connect(cls) -> "DAQ":
+        pass

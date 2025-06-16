@@ -1,7 +1,13 @@
-from .core import DAQ
+from .core import DAQ, BoardInfo
 import u3
+from LabJackPython import listAll
+from typing import NamedTuple, List
 
-class LabJack_U3LV_DAQ(DAQ):
+import logging
+logger = logging.getLogger(__name__)
+
+
+class LabJack_U3_DAQ(DAQ):
     '''
     Use LabJack to read and write from a single pin at a time.
     Supports Analog input (FIOs) and output (DACs), digital
@@ -61,10 +67,11 @@ class LabJack_U3LV_DAQ(DAQ):
     TIMER_MODE_8BIT = 1
 
     CLOCK: int = 48 # I'm only using the 48MHz clock with divisors enabled 
+
+    def __init__(self, serial_number: int) -> None:
         
-    def __init__(self) -> None:
-        
-        self.device = u3.U3()
+        self.device = u3.U3(serial = serial_number)
+        logger.info(f"Connected to LabJack U3-LV S/N: {self.device.serialNumber}")
 
     def analog_write(self, channel: int, val: float) -> None:
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
@@ -103,7 +110,7 @@ class LabJack_U3LV_DAQ(DAQ):
             div = 2**16
 
         # make sure digital value is 0
-        self.digitalWrite(channel,0)
+        self.digital_write(channel,0)
 
         if duty_cycle == 0:
             # PWM can't fully turn off. Use digital write instead
@@ -133,5 +140,46 @@ class LabJack_U3LV_DAQ(DAQ):
         self.device.writeRegister(self.TIMER_CONFIG, [timer_mode, value]) 
 
     def close(self) -> None:
+        # TODO make sure you turn off everything?
+        logger.info("Closing Arduino connection.")
         self.device.close()
 
+    @classmethod
+    def list_boards(cls) -> List[BoardInfo]:
+        u3s = listAll(3) # get all U3 boards
+        boards = []
+        for id, info in u3s.items():
+            boards.append(BoardInfo(id=info['serialNumber'], name=info['deviceName']))
+
+        logger.debug(f"Found {len(boards)} supported U3 board(s).")
+        return boards
+
+    @classmethod
+    def auto_connect(cls) -> "LabJack_U3_DAQ":
+        boards = cls.list_boards()
+        if len(boards) == 1:
+            return cls(boards[0].id)
+        elif len(boards) == 0:
+            raise RuntimeError("No supported U3 boards found.")
+        else:
+            raise RuntimeError(f"Multiple boards found. Please specify one explicitly.")
+       
+if __name__ == "__main__":
+
+    import time
+    
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    boards = LabJack_U3_DAQ.list_boards()
+    print(boards)
+    if not boards:
+        exit(1)
+
+    daq = LabJack_U3_DAQ(boards[0].id)
+    daq.digital_write(2, True)
+    time.sleep(5)
+    daq.digital_write(2, False)
+    daq.close()

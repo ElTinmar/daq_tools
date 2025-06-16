@@ -1,9 +1,8 @@
-from .core import DAQ, DAQReadError
+from .core import DAQ, DAQReadError, BoardInfo
 from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
 from typing import List, Optional, NamedTuple
 import logging
-
 logger = logging.getLogger(__name__)
 
 SUPPORTED_ARDUINO_BOARDS = {
@@ -13,10 +12,6 @@ SUPPORTED_ARDUINO_BOARDS = {
     ("2341", "0058"), # Arduino Nano Every (uses native USB CDC)
     ("2341", "0001"), # Uno Rev2 or variants
 }
-
-class ArduinoBoardInfo(NamedTuple):
-    device: str
-    description: str
 
 class Arduino_DAQ(DAQ):
 
@@ -83,17 +78,18 @@ class Arduino_DAQ(DAQ):
 
     def close(self) -> None:
         logger.info("Closing Arduino connection.")
+        # TODO make sure you turn off everything?
         self.device.exit()
 
     @classmethod
-    def list_boards(cls) -> List[ArduinoBoardInfo]:
+    def list_boards(cls) -> List[BoardInfo]:
         ports = list_ports.comports()
         boards = []
         for port in ports:
             vid = f"{port.vid:04x}" if port.vid else None
             pid = f"{port.pid:04x}" if port.pid else None
             if (vid, pid) in SUPPORTED_ARDUINO_BOARDS:
-                boards.append(ArduinoBoardInfo(port.device, port.description))
+                boards.append(BoardInfo(id=port.device, name=port.description))
 
         logger.debug(f"Found {len(boards)} supported Arduino board(s).")
         return boards
@@ -102,7 +98,7 @@ class Arduino_DAQ(DAQ):
     def auto_connect(cls) -> "Arduino_DAQ":
         boards = cls.list_boards()
         if len(boards) == 1:
-            return cls(boards[0].device)
+            return cls(boards[0].id)
         elif len(boards) == 0:
             raise RuntimeError("No supported Arduino boards found.")
         else:
@@ -122,7 +118,7 @@ if __name__ == "__main__":
     if not boards:
         exit(1)
 
-    daq = Arduino_DAQ(boards[0].device)
+    daq = Arduino_DAQ(boards[0].id)
     daq.digital_write(11, True)
     time.sleep(1)
     daq.digital_write(11, False)

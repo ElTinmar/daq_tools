@@ -19,6 +19,13 @@ Reboot to make sure changes are applied
 
 Labjack exodriver
 
+```bash
+sudo apt install build-essential libusb-1.0-0-dev
+git clone https://github.com/labjack/exodriver.git
+cd exodriver/
+sudo ./install.sh
+```
+
 ### Conda
 
 ```bash
