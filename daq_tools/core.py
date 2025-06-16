@@ -28,6 +28,8 @@ class DAQ(ABC):
 
     @abstractmethod
     def digital_read(self, channel: int) -> float:
+        # TODO: ideally you would like to specify PULL_UP / PULL_DOWN vs FLOATING
+        # LabJack is pulled up by default
         pass
 
     @abstractmethod
