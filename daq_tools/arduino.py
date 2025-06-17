@@ -30,10 +30,15 @@ class Arduino_DAQ(DAQ):
         self.reset_state()
 
     def digital_read(self, channel: int) -> float:
+
         try:
             pin = self.device.digital[channel]
         except IndexError:
             raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.digital) - 1}.")
+        
+        if pin.PWM_CAPABLE:
+            raise ValueError(f'digital read not available on PWM pin')
+        
         pin.mode = INPUT         
         val = pin.read()
         if val is None:
@@ -42,10 +47,15 @@ class Arduino_DAQ(DAQ):
         return val
 
     def digital_write(self, channel: int, val: bool) -> None:
+        
         try:
             pin = self.device.digital[channel]
         except IndexError:
             raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.digital) - 1}.")
+        
+        if pin.PWM_CAPABLE:
+            raise ValueError(f'digital write not available on PWM pin')
+        
         pin.mode = OUTPUT
         pin.write(val)
 
@@ -134,26 +144,27 @@ if __name__ == "__main__":
         exit(1)
 
     with Arduino_DAQ(boards[0].id) as daq:
-
-        # digital
-        print('digital write')
-        daq.digital_write(DIGITAL_PIN, True)
-        time.sleep(2)
-        daq.digital_write(DIGITAL_PIN, False)
-
         # pwm
-        print('pwm')
+        logging.info('PWM FIO4')
         for j in range(5):
             for i in range(100):
-                daq.pwm(PWM_PIN, i/100)
+                daq.pwm(3, i/100)
                 time.sleep(1/100)
-            daq.pwm(PWM_PIN,0)
+            daq.pwm(3,0)
 
-        # two digital channels
-        print('digital write two channels')
-        daq.digital_write(DIGITAL_PIN, True)
-        daq.digital_write(PWM_PIN, True)
+        # digital
+        logging.info('Digital ON ')
+        daq.digital_write(4, True)
         time.sleep(2)
+        daq.digital_write(4, False)
 
-        # turn off on close
-
+        # turn on everything
+        daq.pwm(3, 0.10)
+        time.sleep(1)
+        daq.digital_write(4, True)
+        time.sleep(1)
+        daq.digital_write(8, True)
+        time.sleep(1)
+        daq.pwm(9, 0.80)
+        time.sleep(1)
+        

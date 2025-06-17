@@ -109,6 +109,9 @@ class LabJack_U3_DAQ(DAQ):
         self.device.writeRegister(self.channels['DigitalInputOutput'][channel], val)
 
     def digital_read(self, channel: int) -> float:
+        if channel in self.pwm_pins:
+            raise ValueError(f'digital read not available on PWM pins {self.pwm_pins}')
+
         self.device.writeRegister(self.FIO_ANALOG, 0) # set channel as digital
         return self.device.readRegister(self.channels['DigitalInputOutput'][channel])
    
@@ -141,7 +144,7 @@ class LabJack_U3_DAQ(DAQ):
     def reset_state(self):
         
         logger.info("Configure device: 2 timers @ 48MHz, no prescaler on pins FIO4 and FIO5 ")
-        
+
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 2) 
         self.device.writeRegister(self.TIMER_PIN_OFFSET, 4) 
         self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)'].register) 
@@ -209,13 +212,17 @@ if __name__ == "__main__":
                 time.sleep(1/100)
         daq.analog_write(0, 0)
 
-        # turn off on everything at once
+        # turn on everything 
         daq.analog_write(0, 1.75)
+        time.sleep(1)
         daq.digital_write(2, True)
+        time.sleep(1)
         daq.digital_write(0, True)
+        time.sleep(1)
         daq.pwm(4, 0.10)
+        time.sleep(1)
         daq.pwm(5, 0.80)
-        time.sleep(2)
+        time.sleep(1)
 
 
 
