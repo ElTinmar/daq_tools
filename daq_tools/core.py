@@ -17,8 +17,6 @@ class DAQReadError(Exception):
 
 class DAQ(ABC):
     """
-    Abstract base class defining a common interface for Data Acquisition (DAQ) devices.
-
     This interface supports basic digital and analog I/O operations, including reading and writing
     digital signals, PWM output, and analog input/output. It is designed primarily for simple use cases 
     involving one channel accessed at a time. Complex multi-channel or 
@@ -29,6 +27,14 @@ class DAQ(ABC):
     Context management is supported to allow usage with 'with' statements, ensuring proper resource cleanup.
 
     Class methods `list_boards` and `auto_connect` facilitate device discovery and automatic connection.
+
+    Note on non-blocking mode:
+    The non-blocking versions of these methods create threads on the fly to run pulses asynchronously.
+    Thread creation overhead is typically in the sub-millisecond range (tens to hundreds of microseconds),
+    which is generally acceptable for many applications.
+    However, because thread scheduling and execution timing depend on the OS and Python runtime,
+    these methods should **not** be used for timing-sensitive or real-time applications
+    where precise pulse timing and latency guarantees are required.
     """
 
     @abstractmethod
