@@ -8,3 +8,5 @@ dependencies:
 - labjackpython
 - pyfirmata
 - pyserial
+- pip:
+  - nidaqmx
