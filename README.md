@@ -56,12 +56,10 @@ try setting baudrate to 1200 in serial monitor and restart upload
 
 ## NI
 
-Download .deb from NI website
+Works on Ubuntu 24.04 (couldn't get it to install on 25.04, maybe need older kernel)
 
 ```bash
-sudo apt install ./ni-ubuntu2404-drivers-2025Q2.deb
-sudo apt update
-sudo apt install ni-hwcfg-utility ni-daqmx
+sudo /path/to/python -m nidaqmx installdrivers
 ```
 
 ### Conda
