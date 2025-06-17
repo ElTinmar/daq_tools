@@ -78,7 +78,7 @@ class SoftwareTimingDAQ(ABC):
         pass
 
     @classmethod
-    def auto_connect(cls) -> "DAQ":
+    def auto_connect(cls) -> "SoftwareTimingDAQ":
         boards = cls.list_boards()
         if len(boards) == 1:
             return cls(boards[0].id)
