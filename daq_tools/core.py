@@ -134,3 +134,7 @@ class SoftwareTimingDAQ(ABC):
             self.close()
         except Exception:
             logger.warning("Exception occurred during DAQ cleanup in __del__", exc_info=True)
+
+
+class HardwareTimingDAQ(ABC):
+    pass
