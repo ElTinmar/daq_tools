@@ -85,7 +85,9 @@ class LabJack_U3_DAQ(DAQ):
     def __init__(self, serial_number: int) -> None:
         
         self.device = u3.U3(serial = serial_number)
+        self._closed = False
         logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
+        self.reset_state()
 
     def analog_write(self, channel: int, val: float) -> None:
         # DAC uses PWM internally. Reset clock to default settings to avoid interactions
@@ -160,9 +162,29 @@ class LabJack_U3_DAQ(DAQ):
         self.device.writeRegister(self.TIMER_CONFIG, [timer_mode, value]) 
 
     def close(self) -> None:
-        # TODO make sure you turn off everything?
-        logger.info("Closing LabJack connection.")
+        if self._closed:
+            return  
+
+        logger.info("Closing LabJack connection, setting outputs off")
+        self.reset_state()
         self.device.close()
+        self._closed = True
+
+    def reset_state(self):
+
+        logger.info("Resetting all output pins to LOW")
+        
+        for channel in range(len(self.channels['DigitalInputOutput'])):
+            try:
+                self.digital_write(channel, False)
+            except Exception as e:
+                logger.warning(f"Failed to reset digital channel {channel}: {e}")
+
+        for channel in range(len(self.channels['AnalogOutput'])):
+            try:
+                self.analog_write(channel, 0)
+            except Exception as e:
+                logger.warning(f"Failed to reset analog channel {channel}: {e}")
 
     @classmethod
     def list_boards(cls) -> List[BoardInfo]:

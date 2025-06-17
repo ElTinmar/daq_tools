@@ -27,6 +27,8 @@ class Arduino_DAQ(DAQ):
             logger.error(f"Failed to connect to Arduino board: {e}")
             raise
 
+        self.reset_state()
+
     def digital_read(self, channel: int) -> float:
         try:
             pin = self.device.digital[channel]
@@ -85,26 +87,21 @@ class Arduino_DAQ(DAQ):
         if self._closed:
             return  # Already closed, do nothing
         
-        logger.info("Closing Arduino connection, resetting pins to safe state.")
+        logger.info("Closing Arduino connection, setting outputs off")
+        self.reset_state()
+        self.device.exit()
+        self._closed = True
+    
+    def reset_state(self):
 
-        # Reset digital pins to input and low
+        logger.info("Resetting all output pins to LOW")
+        
         for pin in self.device.digital:
             try:
-                pin.write(False)  # Set LOW first (if applicable)
-                pin.mode = INPUT  # Set to input mode (high impedance)
+                pin.write(False)  
             except Exception as e:
                 logger.warning(f"Failed to reset digital pin {pin.pin_number}: {e}")
 
-        # No direct method to reset analog pins, but disabling reporting is good
-        for pin in self.device.analog:
-            try:
-                pin.disable_reporting()
-            except Exception as e:
-                logger.warning(f"Failed to disable reporting on analog pin {pin.pin_number}: {e}")
-
-        self.device.exit()
-
-        self._closed = True
 
     @classmethod
     def list_boards(cls) -> List[BoardInfo]:
