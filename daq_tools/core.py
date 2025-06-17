@@ -78,12 +78,6 @@ class DAQ(ABC):
         """Release any resources held by the DAQ device."""
         pass
 
-    def __enter__(self):   
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
-
     @classmethod
     @abstractmethod
     def list_boards(cls) -> List[BoardInfo]:
@@ -136,3 +130,9 @@ class DAQ(ABC):
             do_pwm_pulse()
         else:
             threading.Thread(target=do_pwm_pulse, daemon=True).start()
+
+    def __enter__(self):   
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
