@@ -17,7 +17,7 @@ class DAQReadError(Exception):
     """Exception raised for errors in reading from the DAQ device."""
     pass
 
-class DAQ(ABC):
+class SoftwareTimingDAQ(ABC):
     """
     This interface supports basic digital and analog I/O operations, including reading and writing
     digital signals, PWM output, and analog input/output. It is designed primarily for simple use cases 

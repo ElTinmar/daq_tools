@@ -1,4 +1,4 @@
-from .core import DAQ, BoardInfo
+from .core import SoftwareTimingDAQ, BoardInfo
 import u3
 from LabJackPython import listAll
 from typing import NamedTuple, List
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 # https://github.com/labjack/LabJackPython
 # https://support.labjack.com/docs/ud-modbus-old-deprecated
 
-class LabJack_U3_DAQ(DAQ):
+class LabJack_U3_DAQ(SoftwareTimingDAQ):
     '''
     Use LabJack to read and write from a single pin at a time.
     Supports Analog input (FIOs) and output (DACs), digital

@@ -1,4 +1,4 @@
-from .core import DAQ, DAQReadError, BoardInfo
+from .core import SoftwareTimingDAQ, DAQReadError, BoardInfo
 from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
 from typing import List, Optional
@@ -13,7 +13,7 @@ SUPPORTED_ARDUINO_BOARDS = {
     ("2341", "0001"), # Uno Rev2 or variants
 }
 
-class Arduino_DAQ(DAQ):
+class Arduino_DAQ(SoftwareTimingDAQ):
 
     def __init__(self, board_id: str) -> None:
         
