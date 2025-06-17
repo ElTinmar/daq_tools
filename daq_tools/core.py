@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, NamedTuple, List
+import threading
+import time
 
 # TODO: set default pin state on startup
 # TODO: set default pin state on close
@@ -19,10 +21,10 @@ class DAQ(ABC):
 
     This interface supports basic digital and analog I/O operations, including reading and writing
     digital signals, PWM output, and analog input/output. It is designed primarily for simple use cases 
-    involving one channel accessed at a time (single-channel usage). Complex multi-channel or 
+    involving one channel accessed at a time. Complex multi-channel or 
     concurrent operations are not explicitly supported by this interface.
-
-    Subclasses should implement the hardware-specific logic for each abstract method.
+    Timing and synchronization of I/O operations are handled in software and are not suitable
+    for high-precision or real-time applications. Use hardware-timed solutions for such needs.
 
     Context management is supported to allow usage with 'with' statements, ensuring proper resource cleanup.
 
@@ -73,3 +75,40 @@ class DAQ(ABC):
     def auto_connect(cls) -> "DAQ":
         """Automatically detect and connect to a DAQ device, returning an instance."""
         pass
+
+    def digital_pulse(
+            self, 
+            channel: int, 
+            duration: float, 
+            level: bool = True, 
+            blocking: bool = True
+        ) -> None:
+
+        def do_pulse():
+            self.digital_write(channel, level)
+            time.sleep(duration)
+            self.digital_write(channel, not level)
+
+        if blocking:
+            do_pulse()
+        else:
+            threading.Thread(target=do_pulse, daemon=True).start()
+
+    def pwm_pulse(
+            self,
+            channel: int,
+            duration: float,
+            duty_cycle: float,
+            frequency: float,
+            blocking: bool = True
+        ) -> None:
+        
+        def do_pwm_pulse():
+            self.pwm(channel, duty_cycle, frequency)
+            time.sleep(duration)
+            self.pwm(channel, 0.0, frequency)  
+            
+        if blocking:
+            do_pwm_pulse()
+        else:
+            threading.Thread(target=do_pwm_pulse, daemon=True).start()
