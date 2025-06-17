@@ -39,10 +39,6 @@ class DAQ(ABC):
     where precise pulse timing and latency guarantees are required.
     """
 
-    def __init__(self):
-        
-        self._closed = False
-
     @abstractmethod
     def digital_read(self, channel: int) -> float:
         # TODO: ideally you would like to specify PULL_UP / PULL_DOWN vs FLOATING

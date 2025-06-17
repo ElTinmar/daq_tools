@@ -88,6 +88,7 @@ class LabJack_U3_DAQ(DAQ):
         
         self.device = u3.U3(serial = serial_number)
         logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
+        self._closed = False
         self.reset_state()
 
     def analog_write(self, channel: int, val: float) -> None:

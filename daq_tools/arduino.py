@@ -25,7 +25,8 @@ class Arduino_DAQ(DAQ):
         except Exception as e:
             logger.error(f"Failed to connect to Arduino board: {e}")
             raise
-
+        
+        self._closed = False
         self.reset_state()
 
     def digital_read(self, channel: int) -> float:
