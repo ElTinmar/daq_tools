@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, NamedTuple, List
 import threading
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 # TODO: set default pin state on startup
 # TODO: set default pin state on close
@@ -122,3 +124,9 @@ class DAQ(ABC):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            logger.warning("Exception occurred during DAQ cleanup in __del__", exc_info=True)
