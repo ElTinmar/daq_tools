@@ -74,16 +74,16 @@ pip install git+https://github.com/ElTinmar/daq_tools.git@main
 Print available boards and serial ports
 
 ```python
-from daq_tools import Arduino_DAQ
-print(Arduino_DAQ.list_boards())
+from daq_tools import Arduino_SoftTiming
+print(Arduino_SoftTiming.list_boards())
 ```
 
 Turn on and off digital pin 
 ```python
 import time
-from daq_tools import Arduino_DAQ
+from daq_tools import Arduino_SoftTiming
 
-daq = Arduino_DAQ('/dev/ttyUSB0')
+daq = Arduino_SoftTiming('/dev/ttyUSB0')
 daq.digital_write(11, True)
 time.sleep(1)
 daq.digital_write(11, False)
@@ -93,9 +93,9 @@ daq.close()
 Alternatively you can use a context manager
 ```python
 import time
-from daq_tools import Arduino_DAQ
+from daq_tools import Arduino_SoftTiming
 
-with Arduino_DAQ('/dev/ttyUSB0') as daq:
+with Arduino_SoftTiming('/dev/ttyUSB0') as daq:
     daq.digital_write(11, True)
     time.sleep(1)
     daq.digital_write(11, False)

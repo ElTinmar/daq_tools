@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 # https://github.com/labjack/LabJackPython
 # https://support.labjack.com/docs/ud-modbus-old-deprecated
 
-class LabJack_U3_DAQ(SoftwareTimingDAQ):
+class LabJackU3_SoftTiming(SoftwareTimingDAQ):
     '''
     Use LabJack to read and write from a single pin at a time.
     Supports Analog input (FIOs) and output (DACs), digital
@@ -183,12 +183,12 @@ if __name__ == "__main__":
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
-    boards = LabJack_U3_DAQ.list_boards()
+    boards = LabJackU3_SoftTiming.list_boards()
     print(boards)
     if not boards:
         exit(1)
 
-    with LabJack_U3_DAQ(boards[0].id) as daq:
+    with LabJackU3_SoftTiming(boards[0].id) as daq:
         
         # digital
         logging.info('Digital ON FIO2')

@@ -13,7 +13,7 @@ SUPPORTED_ARDUINO_BOARDS = {
     ("2341", "0001"), # Uno Rev2 or variants
 }
 
-class Arduino_DAQ(SoftwareTimingDAQ):
+class Arduino_SoftTiming(SoftwareTimingDAQ):
 
     def __init__(self, board_id: str) -> None:
         
@@ -135,12 +135,12 @@ if __name__ == "__main__":
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
-    boards = Arduino_DAQ.list_boards()
+    boards = Arduino_SoftTiming.list_boards()
     print(boards)
     if not boards:
         exit(1)
 
-    with Arduino_DAQ(boards[0].id) as daq:
+    with Arduino_SoftTiming(boards[0].id) as daq:
 
         # pwm
         logging.info('PWM FIO4')

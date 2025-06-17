@@ -1,3 +1,3 @@
 from .core import SoftwareTimingDAQ
-from .arduino import Arduino_DAQ
-from .labjack import LabJack_U3_DAQ
+from .arduino import Arduino_SoftTiming
+from .labjack import LabJackU3_SoftTiming

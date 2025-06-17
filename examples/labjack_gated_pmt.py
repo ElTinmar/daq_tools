@@ -1,10 +1,10 @@
-from daq_tools import LabJack_U3_DAQ
+from daq_tools import LabJackU3_SoftTiming
 import time
 
 DURATION_SEC = 10
 FREQUENCY_HZ = 20
 
-with LabJack_U3_DAQ.auto_connect() as daq:
+with LabJackU3_SoftTiming.auto_connect() as daq:
 
     for j in range(DURATION_SEC):
         for i in range(FREQUENCY_HZ):
