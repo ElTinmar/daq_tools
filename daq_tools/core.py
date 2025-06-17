@@ -91,10 +91,14 @@ class DAQ(ABC):
         pass
 
     @classmethod
-    @abstractmethod
     def auto_connect(cls) -> "DAQ":
-        """Automatically detect and connect to a DAQ device, returning an instance."""
-        pass
+        boards = cls.list_boards()
+        if len(boards) == 1:
+            return cls(boards[0].id)
+        elif len(boards) == 0:
+            raise RuntimeError("No supported board found.")
+        else:
+            raise RuntimeError(f"Multiple boards found. Please specify one explicitly.")
 
     def digital_pulse(
             self, 

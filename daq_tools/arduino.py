@@ -85,7 +85,7 @@ class Arduino_DAQ(DAQ):
         if not getattr(pin, "_reporting_enabled", False):
             pin.enable_reporting()
             pin._reporting_enabled = True  
-            
+
         val = pin.read()
         if val is None:
             logger.error(f"Read from analog channel {channel} returned None.")
@@ -112,16 +112,6 @@ class Arduino_DAQ(DAQ):
 
         logger.debug(f"Found {len(boards)} supported Arduino board(s).")
         return boards
-
-    @classmethod
-    def auto_connect(cls) -> "Arduino_DAQ":
-        boards = cls.list_boards()
-        if len(boards) == 1:
-            return cls(boards[0].id)
-        elif len(boards) == 0:
-            raise RuntimeError("No supported Arduino boards found.")
-        else:
-            raise RuntimeError(f"Multiple boards found. Please specify one explicitly.")
         
 if __name__ == "__main__":
 

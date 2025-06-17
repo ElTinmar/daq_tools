@@ -189,16 +189,6 @@ class LabJack_U3_DAQ(DAQ):
         logger.debug(f"Found {len(boards)} supported U3 board(s).")
         return boards
 
-    @classmethod
-    def auto_connect(cls) -> "LabJack_U3_DAQ":
-        boards = cls.list_boards()
-        if len(boards) == 1:
-            return cls(boards[0].id)
-        elif len(boards) == 0:
-            raise RuntimeError("No supported U3 boards found.")
-        else:
-            raise RuntimeError(f"Multiple boards found. Please specify one explicitly.")
-       
 if __name__ == "__main__":
 
     DIGITAL_PIN = 0
