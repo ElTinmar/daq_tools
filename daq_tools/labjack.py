@@ -87,6 +87,21 @@ class LabJack_U3_DAQ(DAQ):
         self.device = u3.U3(serial = serial_number)
         logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
 
+    def supports_digital_read(self) -> bool:
+        return True 
+
+    def supports_digital_write(self) -> bool:
+        return True 
+
+    def supports_analog_read(self) -> bool:
+        return True 
+
+    def supports_analog_write(self) -> bool:
+        return True 
+
+    def supports_pwm(self) -> bool:
+        return True 
+
     def analog_write(self, channel: int, val: float) -> None:
         # DAC uses PWM internally. Reset clock to default settings to avoid interactions
         # with PWM

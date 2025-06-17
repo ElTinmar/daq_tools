@@ -26,6 +26,21 @@ class Arduino_DAQ(DAQ):
             logger.error(f"Failed to connect to Arduino board: {e}")
             raise
 
+    def supports_digital_read(self) -> bool:
+        return True 
+
+    def supports_digital_write(self) -> bool:
+        return True 
+
+    def supports_analog_read(self) -> bool:
+        return True 
+
+    def supports_analog_write(self) -> bool:
+        return False 
+
+    def supports_pwm(self) -> bool:
+        return True 
+
     def digital_read(self, channel: int) -> float:
         try:
             pin = self.device.digital[channel]
@@ -66,7 +81,11 @@ class Arduino_DAQ(DAQ):
             pin = self.device.analog[channel]
         except IndexError:
             raise ValueError(f"Invalid channel {channel}. Valid channels are 0 to {len(self.device.analog) - 1}.")
-        pin.enable_reporting()
+        
+        if not getattr(pin, "_reporting_enabled", False):
+            pin.enable_reporting()
+            pin._reporting_enabled = True  
+            
         val = pin.read()
         if val is None:
             logger.error(f"Read from analog channel {channel} returned None.")

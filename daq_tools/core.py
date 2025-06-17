@@ -32,6 +32,26 @@ class DAQ(ABC):
     """
 
     @abstractmethod
+    def supports_digital_read(self) -> bool:
+        pass 
+
+    @abstractmethod
+    def supports_digital_write(self) -> bool:
+        pass 
+
+    @abstractmethod
+    def supports_analog_read(self) -> bool:
+        pass 
+
+    @abstractmethod
+    def supports_analog_write(self) -> bool:
+        pass 
+
+    @abstractmethod
+    def supports_pwm(self) -> bool:
+        pass 
+
+    @abstractmethod
     def digital_read(self, channel: int) -> float:
         # TODO: ideally you would like to specify PULL_UP / PULL_DOWN vs FLOATING
         # LabJack is pulled up by default
@@ -107,7 +127,7 @@ class DAQ(ABC):
             self.pwm(channel, duty_cycle, frequency)
             time.sleep(duration)
             self.pwm(channel, 0.0, frequency)  
-            
+
         if blocking:
             do_pwm_pulse()
         else:
