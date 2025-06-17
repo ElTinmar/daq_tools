@@ -50,7 +50,7 @@ class DAQ(ABC):
         pass
 
     @abstractmethod
-    def pwm(self, channel: int, duty_cycle: float, frequency: Optional[float]) -> None:
+    def pwm(self, channel: int, duty_cycle: float) -> None:
         pass
         
     @abstractmethod
@@ -110,14 +110,13 @@ class DAQ(ABC):
             channel: int,
             duration: float,
             duty_cycle: float,
-            frequency: float,
             blocking: bool = True
         ) -> None:
         
         def do_pwm_pulse():
-            self.pwm(channel, duty_cycle, frequency)
+            self.pwm(channel, duty_cycle)
             time.sleep(duration)
-            self.pwm(channel, 0.0, frequency)  
+            self.pwm(channel, 0.0)  
 
         if blocking:
             do_pwm_pulse()

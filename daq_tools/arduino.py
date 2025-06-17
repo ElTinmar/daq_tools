@@ -49,7 +49,7 @@ class Arduino_DAQ(DAQ):
         pin.mode = OUTPUT
         pin.write(val)
 
-    def pwm(self, channel: int, duty_cycle: float, frequency: Optional[float] = None) -> None:
+    def pwm(self, channel: int, duty_cycle: float) -> None:
         """
         Set PWM on a pin with a duty cycle (0.0 to 1.0).
         Note: Arduino's PWM frequency cannot be changed via pyfirmata.

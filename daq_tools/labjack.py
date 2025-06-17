@@ -88,80 +88,46 @@ class LabJack_U3_DAQ(DAQ):
         
         self.device = u3.U3(serial = serial_number)
         logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
+        self.pwm_pins = {4, 5}
         self._closed = False
         self.reset_state()
 
     def analog_write(self, channel: int, val: float) -> None:
-        # DAC uses PWM internally. Reset clock to default settings to avoid interactions
-        # with PWM
-        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)'].register)
-        self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, 0) # just to be extra careful
-        self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.channels['AnalogOutput'][channel], val)
 
     def analog_read(self, channel: int) -> float:
-        self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         # Set the FIO pin to analog mode using a bitmask
         bitmask = 1 << channel
         self.device.writeRegister(self.FIO_ANALOG, bitmask) # set channel as analog
         return self.device.readRegister(self.channels['AnalogInput'][channel])
     
     def digital_write(self, channel: int, val: bool):
-        self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
+        if channel in self.pwm_pins:
+            raise ValueError(f'digital write not available on PWM pins {self.pwm_pins}')
+
         self.device.writeRegister(self.FIO_ANALOG, 0) # set all channels as digital
         self.device.writeRegister(self.channels['DigitalInputOutput'][channel], val)
 
     def digital_read(self, channel: int) -> float:
-        self.device.writeRegister(self.NUM_TIMER_ENABLED, 0)
         self.device.writeRegister(self.FIO_ANALOG, 0) # set channel as digital
         return self.device.readRegister(self.channels['DigitalInputOutput'][channel])
    
-    def pwm(self, channel: int = 4, duty_cycle: float = 0.5, frequency: float = 732.42) -> None:
+    def pwm(self, channel: int = 4, duty_cycle: float = 0.5) -> None:
+        # PWM on FIO4 and FIO5, PWM frequency fixed in init
+
+        if channel not in self.pwm_pins:
+            raise ValueError(f'PWM only available on pins {self.pwm_pins}')
+
+        channel_offset = channel-4
 
         if not (0 <= duty_cycle <= 1):
             raise ValueError('duty_cycle should be between 0 and 1')
-
-        if frequency > 187_500:
-            raise ValueError('max frequency at 48MHz is 187_500 Hz')
-        elif frequency < 2.861:
-            raise ValueError('min frequency at 48MHz is 2.861 Hz')
-         
-        if frequency > 732.42:
-            timer_mode = self.TIMER_MODE_8BIT
-            div = 2**8
-        else:
-            timer_mode = self.TIMER_MODE_16BIT
-            div = 2**16
-
-        # make sure digital value is 0
-        self.digital_write(channel, 0)
-
-        if duty_cycle == 0:
-            # PWM can't fully turn off. Use digital write instead
-            # and return
-            return
-        
-        # enable Timer0 
-        self.device.writeRegister(self.NUM_TIMER_ENABLED, 1)
-
-        # set the timer clock to 48 MHz with divisor
-        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz/Divisor'].register)
-
-        # divisor should be in the range 0-255, 0 corresponds to a divisor of 256
-        timer_clock_divisor = int(self.CLOCK_BASE['48MHz/Divisor'].frequency_Hz/(frequency * div))
-        if timer_clock_divisor == 256: timer_clock_divisor = 0 
-
-        # set divisor
-        self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, timer_clock_divisor)
-
-        # Pin offset (FIO) 
-        self.device.writeRegister(self.TIMER_PIN_OFFSET, channel) 
 
         # 16 bit value for duty cycle (8bit timer mode: LSB is ignored)
         value = int(65535*(1-duty_cycle))
 
         # Configure the timer for 16-bit PWM
-        self.device.writeRegister(self.TIMER_CONFIG, [timer_mode, value]) 
+        self.device.writeRegister(self.TIMER_CONFIG + (channel_offset*2), [self.TIMER_MODE_16BIT, value]) 
 
     def close(self) -> None:
         if self._closed:
@@ -173,6 +139,13 @@ class LabJack_U3_DAQ(DAQ):
         self._closed = True
 
     def reset_state(self):
+        
+        logger.info("Configure device: 2 timers @ 48MHz, no prescaler on pins FIO4 and FIO5 ")
+        
+        self.device.writeRegister(self.NUM_TIMER_ENABLED, 2) 
+        self.device.writeRegister(self.TIMER_PIN_OFFSET, 4) 
+        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)'].register) 
+        self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, 0) 
 
         logger.info("Resetting all output pins to LOW")
         
@@ -200,9 +173,6 @@ class LabJack_U3_DAQ(DAQ):
 
 if __name__ == "__main__":
 
-    DIGITAL_PIN = 0
-    PWM_PIN = 4
-
     import time
     
     logging.basicConfig(
@@ -218,33 +188,34 @@ if __name__ == "__main__":
     with LabJack_U3_DAQ(boards[0].id) as daq:
         
         # digital
-        print('digital write')
-        daq.digital_write(DIGITAL_PIN, True)
+        logging.info('Digital ON FIO2')
+        daq.digital_write(0, True)
         time.sleep(2)
-        daq.digital_write(DIGITAL_PIN, False)
+        daq.digital_write(0, False)
 
         # pwm
-        print('pwm')
+        logging.info('PWM FIO4')
         for j in range(5):
             for i in range(100):
-                daq.pwm(PWM_PIN, i/100, 1000)
+                daq.pwm(4, i/100)
                 time.sleep(1/100)
-            daq.pwm(PWM_PIN,0,1000)
+            daq.pwm(4,0)
 
         # analog
-        print('analog write')
-        daq.analog_write(0, 1.75)
-        time.sleep(2)
+        logging.info('Analog write DAC0')
+        for j in range(5):
+            for i in range(100):
+                daq.analog_write(0, 1.75*i/100)
+                time.sleep(1/100)
         daq.analog_write(0, 0)
 
-        # two digital channels
-        print('digital write two channels')
-        daq.digital_write(DIGITAL_PIN, True)
-        daq.digital_write(PWM_PIN, True)
+        # turn off on everything at once
+        daq.analog_write(0, 1.75)
+        daq.digital_write(2, True)
+        daq.digital_write(0, True)
+        daq.pwm(4, 0.10)
+        daq.pwm(5, 0.80)
         time.sleep(2)
-
-        # turn off on close
-
 
 
 
