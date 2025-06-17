@@ -144,6 +144,7 @@ if __name__ == "__main__":
         exit(1)
 
     with Arduino_DAQ(boards[0].id) as daq:
+        
         # pwm
         logging.info('PWM FIO4')
         for j in range(5):
