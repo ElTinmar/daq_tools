@@ -4,6 +4,8 @@ from nidaqmx.stream_readers import AnalogSingleChannelReader, DigitalSingleChann
 from nidaqmx.stream_writers import AnalogSingleChannelWriter, DigitalSingleChannelWriter
 import numpy as np
 
+# https://github.com/ni/nidaqmx-python/tree/master/examples 
+
 system = nidaqmx.system.System.local()
 for dev in system.devices:
     print(dev.name)
