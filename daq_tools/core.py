@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, NamedTuple, List
+from typing import NamedTuple, List
 import threading
 import time
 import logging
