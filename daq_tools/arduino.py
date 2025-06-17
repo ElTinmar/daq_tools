@@ -18,6 +18,7 @@ class Arduino_DAQ(DAQ):
     def __init__(self, board_id: str) -> None:
         
         super().__init__()
+        self._closed = False
 
         try:
             self.device = Arduino(board_id)
@@ -81,9 +82,29 @@ class Arduino_DAQ(DAQ):
         raise NotImplementedError("Arduino does not support analog write, use PWM instead.")
 
     def close(self) -> None:
-        logger.info("Closing Arduino connection.")
-        # TODO make sure you turn off everything?
+        if self._closed:
+            return  # Already closed, do nothing
+        
+        logger.info("Closing Arduino connection, resetting pins to safe state.")
+
+        # Reset digital pins to input and low
+        for pin in self.device.digital:
+            try:
+                pin.write(False)  # Set LOW first (if applicable)
+                pin.mode = INPUT  # Set to input mode (high impedance)
+            except Exception as e:
+                logger.warning(f"Failed to reset digital pin {pin.pin_number}: {e}")
+
+        # No direct method to reset analog pins, but disabling reporting is good
+        for pin in self.device.analog:
+            try:
+                pin.disable_reporting()
+            except Exception as e:
+                logger.warning(f"Failed to disable reporting on analog pin {pin.pin_number}: {e}")
+
         self.device.exit()
+
+        self._closed = True
 
     @classmethod
     def list_boards(cls) -> List[BoardInfo]:
