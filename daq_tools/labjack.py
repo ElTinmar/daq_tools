@@ -174,6 +174,9 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         logger.debug(f"Found {len(boards)} supported U3 board(s).")
         return boards
 
+# TODO Labjack in streaming mode
+# Labjack can only stream analog inputs
+
 if __name__ == "__main__":
 
     import time
