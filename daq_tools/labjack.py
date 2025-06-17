@@ -219,9 +219,9 @@ if __name__ == "__main__":
         time.sleep(1)
         daq.digital_write(0, True)
         time.sleep(1)
-        daq.pwm(4, 0.10)
+        daq.pwm(4, 0.025)
         time.sleep(1)
-        daq.pwm(5, 0.80)
+        daq.pwm(5, 0.25)
         time.sleep(1)
 
 

@@ -128,9 +128,6 @@ class Arduino_DAQ(DAQ):
         
 if __name__ == "__main__":
 
-    DIGITAL_PIN = 4
-    PWM_PIN = 3
-
     import time
     
     logging.basicConfig(
@@ -144,7 +141,7 @@ if __name__ == "__main__":
         exit(1)
 
     with Arduino_DAQ(boards[0].id) as daq:
-        
+
         # pwm
         logging.info('PWM FIO4')
         for j in range(5):
@@ -160,12 +157,12 @@ if __name__ == "__main__":
         daq.digital_write(4, False)
 
         # turn on everything
-        daq.pwm(3, 0.10)
+        daq.pwm(3, 0.025)
         time.sleep(1)
         daq.digital_write(4, True)
         time.sleep(1)
         daq.digital_write(8, True)
         time.sleep(1)
-        daq.pwm(9, 0.80)
+        daq.pwm(9, 0.25)
         time.sleep(1)
         
