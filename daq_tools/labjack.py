@@ -83,9 +83,10 @@ class LabJack_U3_DAQ(DAQ):
     }
 
     def __init__(self, serial_number: int) -> None:
+
+        super().__init__()
         
         self.device = u3.U3(serial = serial_number)
-        self._closed = False
         logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
         self.reset_state()
 

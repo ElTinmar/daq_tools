@@ -18,7 +18,6 @@ class Arduino_DAQ(DAQ):
     def __init__(self, board_id: str) -> None:
         
         super().__init__()
-        self._closed = False
 
         try:
             self.device = Arduino(board_id)
@@ -95,7 +94,7 @@ class Arduino_DAQ(DAQ):
     def reset_state(self):
 
         logger.info("Resetting all output pins to LOW")
-        
+
         for pin in self.device.digital:
             try:
                 pin.write(False)  
