@@ -26,21 +26,6 @@ class Arduino_DAQ(DAQ):
             logger.error(f"Failed to connect to Arduino board: {e}")
             raise
 
-    def supports_digital_read(self) -> bool:
-        return True 
-
-    def supports_digital_write(self) -> bool:
-        return True 
-
-    def supports_analog_read(self) -> bool:
-        return True 
-
-    def supports_analog_write(self) -> bool:
-        return False 
-
-    def supports_pwm(self) -> bool:
-        return True 
-
     def digital_read(self, channel: int) -> float:
         try:
             pin = self.device.digital[channel]
