@@ -136,5 +136,176 @@ class SoftwareTimingDAQ(ABC):
             logger.warning("Exception occurred during DAQ cleanup in __del__", exc_info=True)
 
 
+from multiprocessing import Queue, Event, Process
+import queue
+
 class HardwareTimingDAQ(ABC):
-    pass
+    
+    def get_chunk(self):
+        pass
+    
+    def put_chunk(self):
+        pass
+
+class SignalGenerator(Process):
+    """ Generates data to send to DAQ for digital / analog write and place on queue """
+
+    def configure(self, stop_event, queue):
+        
+        self.stop_event = stop_event
+        self.queue = queue
+    
+    def initialize(self):
+        pass
+        
+    def run(self):
+        self.initialize()
+
+        while not self.stop_event.is_set():
+            data = None
+            self.queue.put(data)
+
+        self.cleanup()
+
+    def cleanup(self):
+        pass
+
+class DAQ_Reader(Process):
+    """ Pulls data from DAQ for digital / analog read and place on queue"""
+
+    def configure(self, stop_event, queue, daq):
+        
+        self.stop_event = stop_event
+        self.queue = queue
+        self.daq = daq
+    
+    @abstractmethod
+    def initialize(self):
+        pass
+        
+    def run(self):
+        self.initialize()
+
+        while not self.stop_event.is_set():
+            data = self.daq.get_chunk()
+            self.queue.put(data)
+
+        self.cleanup()
+
+    @abstractmethod
+    def cleanup(self):
+        pass
+
+class DataHandler(Process):
+    """ Do something with data read from DAQ (plot, store, ...) """
+
+    def configure(self, stop_event, queue):
+        
+        self.stop_event = stop_event
+        self.queue = queue
+
+    @abstractmethod    
+    def initialize(self):
+        pass
+
+    @abstractmethod
+    def handle_data(self):
+        pass
+        
+    def run(self):
+        self.initialize()
+
+        while not self.stop_event.is_set():
+            try:
+                data = self.queue.get_nowait()
+                self.handle_data(data)
+            except queue.Empty:
+                pass
+
+        self.cleanup()
+
+    @abstractmethod
+    def cleanup(self):
+        pass
+
+class DAQ_Writer(Process):
+    """ Puts data on the DAQ """
+
+    def configure(self, stop_event, queue, daq):
+
+        self.stop_event = stop_event
+        self.queue = queue
+        self.daq = daq
+    
+    def initialize(self):
+        pass
+        
+    def run(self):
+        self.initialize()
+
+        while not self.stop_event.is_set():
+            try:
+                data = self.queue.get_nowait()
+                self.daq.put_chunk(data)
+            except queue.Empty:
+                pass
+
+        self.cleanup()
+
+    def cleanup(self):
+        pass
+
+def empty_queue(queue):
+    try:
+        while True:
+            queue.get_nowait()
+    except queue.Empty:
+        pass
+
+class System(ABC):
+    
+    def __init__(
+            self, 
+            daq: HardwareTimingDAQ,
+            daq_reader: DAQ_Reader,
+            data_handler: DataHandler,
+            signal_generator: SignalGenerator,
+            daq_writer: DAQ_Writer
+        ):
+
+        self.stop_event = Event()
+        self.queue_write = Queue(maxsize=2)
+        self.queue_read = Queue(maxsize=2)
+
+        self.daq = daq
+        self.daq_reader = daq_reader
+        self.data_handler = data_handler
+        self.signal_generator = signal_generator
+        self.daq_writer = daq_writer
+
+        self.daq_reader.configure(self.stop_event, self.queue_read, self.daq)
+        self.data_handler.configure(self.stop_event, self.queue_read) 
+        self.signal_generator.configure(self.stop_event, self.queue_write)
+        self.daq_writer.configure(self.stop_event, self.queue_write, self.daq)  
+
+    def start(self):
+
+        self.data_handler.start()
+        self.signal_generator.start()
+        self.daq_reader.start()
+        self.daq_writer.start()
+
+    def stop(self):
+        
+        # send stop signal
+        self.stop_event.set()
+
+        # empty the queue
+        empty_queue(self.queue_read)
+        empty_queue(self.queue_write)
+
+        # join
+        self.data_handler.join()
+        self.signal_generator.join()
+        self.daq_reader.join()
+        self.daq_writer.join()
