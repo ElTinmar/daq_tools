@@ -115,7 +115,7 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         self.device.writeRegister(self.FIO_ANALOG, 0) # set channel as digital
         return self.device.readRegister(self.channels['DigitalInputOutput'][channel])
    
-    def pwm(self, channel: int = 4, duty_cycle: float = 0.5) -> None:
+    def pwm_write(self, channel: int = 4, duty_cycle: float = 0.5) -> None:
         # PWM on FIO4 and FIO5, PWM frequency fixed in init
 
         if channel not in self.pwm_pins:
@@ -199,13 +199,13 @@ if __name__ == "__main__":
         time.sleep(2)
         daq.digital_write(0, False)
 
-        # pwm
+        # pwm_write
         logging.info('PWM FIO4')
         for j in range(5):
             for i in range(100):
-                daq.pwm(4, i/100)
+                daq.pwm_write(4, i/100)
                 time.sleep(1/100)
-            daq.pwm(4,0)
+            daq.pwm_write(4,0)
 
         # analog
         logging.info('Analog write DAC0')
@@ -222,9 +222,9 @@ if __name__ == "__main__":
         time.sleep(1)
         daq.digital_write(0, True)
         time.sleep(1)
-        daq.pwm(4, 0.025)
+        daq.pwm_write(4, 0.025)
         time.sleep(1)
-        daq.pwm(5, 0.25)
+        daq.pwm_write(5, 0.25)
         time.sleep(1)
 
 

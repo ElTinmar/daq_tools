@@ -59,7 +59,7 @@ class Arduino_SoftTiming(SoftwareTimingDAQ):
         pin.mode = OUTPUT
         pin.write(val)
 
-    def pwm(self, channel: int, duty_cycle: float) -> None:
+    def pwm_write(self, channel: int, duty_cycle: float) -> None:
         """
         Set PWM on a pin with a duty cycle (0.0 to 1.0).
         Note: Arduino's PWM frequency cannot be changed via pyfirmata.
@@ -142,13 +142,13 @@ if __name__ == "__main__":
 
     with Arduino_SoftTiming(boards[0].id) as daq:
 
-        # pwm
+        # pwm_write
         logging.info('PWM FIO4')
         for j in range(5):
             for i in range(100):
-                daq.pwm(3, i/100)
+                daq.pwm_write(3, i/100)
                 time.sleep(1/100)
-            daq.pwm(3,0)
+            daq.pwm_write(3,0)
 
         # digital
         logging.info('Digital ON ')
@@ -157,12 +157,12 @@ if __name__ == "__main__":
         daq.digital_write(4, False)
 
         # turn on everything
-        daq.pwm(3, 0.025)
+        daq.pwm_write(3, 0.025)
         time.sleep(1)
         daq.digital_write(4, True)
         time.sleep(1)
         daq.digital_write(8, True)
         time.sleep(1)
-        daq.pwm(9, 0.25)
+        daq.pwm_write(9, 0.25)
         time.sleep(1)
         

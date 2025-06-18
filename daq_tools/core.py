@@ -5,9 +5,6 @@ import time
 import logging
 logger = logging.getLogger(__name__)
 
-# TODO: set default pin state on startup
-# TODO: set default pin state on close
-
 class BoardInfo(NamedTuple):
     id: int
     name: str
@@ -50,9 +47,18 @@ class SoftwareTimingDAQ(ABC):
         pass
 
     @abstractmethod
-    def pwm(self, channel: int, duty_cycle: float) -> None:
+    def pwm_write(self, channel: int, duty_cycle: float) -> None:
         pass
-        
+
+    def pwm_read(self, channel: int) -> float:
+        pass
+
+    def counter_read(self, channel: int) -> float:
+        pass
+
+    def counter_write(self, channel: int) -> float:
+        pass
+
     @abstractmethod
     def analog_read(self, channel: int) -> float:
         pass
@@ -114,9 +120,9 @@ class SoftwareTimingDAQ(ABC):
         ) -> None:
         
         def do_pwm_pulse():
-            self.pwm(channel, duty_cycle)
+            self.pwm_write(channel, duty_cycle)
             time.sleep(duration)
-            self.pwm(channel, 0.0)  
+            self.pwm_write(channel, 0.0)  
 
         if blocking:
             do_pwm_pulse()
