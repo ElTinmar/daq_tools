@@ -12,9 +12,15 @@ logger = logging.getLogger(__name__)
 
 class NI_SoftTiming(SoftwareTimingDAQ):
 
-    def __init__(self, device_index: int) -> None:
+    def __init__(
+            self, 
+            device_index: int, 
+            pwm_frequency: float = 1000
+        ) -> None:
 
         super().__init__()
+
+        self.pwm_frequency = pwm_frequency
 
         system = nidaqmx.system.System.local()
         self.device = system.devices[device_index] 
@@ -54,7 +60,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
             task.co_channels.add_co_pulse_chan_freq(
                 pwm_channel.name, 
                 duty_cycle = duty_cycle, 
-                freq = 1000,
+                freq = self.pwm_frequency,
             )
 
     def close(self) -> None:
@@ -89,3 +95,5 @@ class NI_SoftTiming(SoftwareTimingDAQ):
 #    data = np.zeros((1000,), dtype=np.float64)
 #    stream.read_many_sample(data, number_of_samples_per_channel=1000)
     
+class NI_HardTiming:
+    pass
