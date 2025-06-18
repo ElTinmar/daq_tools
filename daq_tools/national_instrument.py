@@ -85,7 +85,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         for idx, dev in enumerate(system.devices):
             boards.append(BoardInfo(id=idx, name=dev.name))
 
-        logger.debug(f"Found {len(boards)} supported U3 board(s).")
+        logger.debug(f"Found {len(boards)} supported NI board(s).")
         return boards
 
 # stream
@@ -125,9 +125,9 @@ if __name__ == "__main__":
         logging.info('PWM FIO4')
         for j in range(5):
             for i in range(100):
-                daq.pwm_write(4, i/100)
+                daq.pwm_write(0, i/100)
                 time.sleep(1/100)
-            daq.pwm_write(4,0)
+            daq.pwm_write(0,0)
 
         # analog
         logging.info('Analog write DAC0')
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         time.sleep(1)
         daq.digital_write(0, True)
         time.sleep(1)
-        daq.pwm_write(4, 0.025)
+        daq.pwm_write(0, 0.025)
         time.sleep(1)
-        daq.pwm_write(5, 0.25)
+        daq.pwm_write(1, 0.25)
         time.sleep(1)
