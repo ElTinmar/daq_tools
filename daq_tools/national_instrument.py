@@ -55,6 +55,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         return val
 
     def pwm_write(self, channel: int, duty_cycle: float) -> None:
+        # TODO check wether duty_cycle in bounds
         pwm_channel = self.device.co_physical_chans[channel]
         with nidaqmx.Task() as task: 
             task.co_channels.add_co_pulse_chan_freq(
@@ -62,6 +63,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
                 duty_cycle = duty_cycle, 
                 freq = self.pwm_frequency,
             )
+            task.start()
 
     def close(self) -> None:
         if self._closed:
