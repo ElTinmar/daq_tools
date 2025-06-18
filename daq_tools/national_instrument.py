@@ -69,7 +69,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
 
         logger.info("Closing NI card, setting outputs off")
         self.reset_state()
-        #self.device.close() 
+        # TODO close device?
         self._closed = True
     
     def reset_state(self):
