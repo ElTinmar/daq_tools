@@ -97,3 +97,56 @@ class NI_SoftTiming(SoftwareTimingDAQ):
     
 class NI_HardTiming:
     pass
+
+
+if __name__ == "__main__":
+
+    import time
+    
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    boards = NI_SoftTiming.list_boards()
+    print(boards)
+    if not boards:
+        exit(1)
+
+    with NI_SoftTiming(boards[0].id) as daq:
+        
+        # digital
+        logging.info('Digital ON FIO2')
+        daq.digital_write(0, True)
+        time.sleep(2)
+        daq.digital_write(0, False)
+
+        # pwm_write
+        logging.info('PWM FIO4')
+        for j in range(5):
+            for i in range(100):
+                daq.pwm_write(4, i/100)
+                time.sleep(1/100)
+            daq.pwm_write(4,0)
+
+        # analog
+        logging.info('Analog write DAC0')
+        for j in range(5):
+            for i in range(100):
+                daq.analog_write(0, 1.75*i/100)
+                time.sleep(1/100)
+        daq.analog_write(0, 0)
+        time.sleep(1)
+
+        # turn on everything 
+        logging.info('Turn everything on')
+        daq.analog_write(0, 1.75)
+        time.sleep(1)
+        daq.digital_write(2, True)
+        time.sleep(1)
+        daq.digital_write(0, True)
+        time.sleep(1)
+        daq.pwm_write(4, 0.025)
+        time.sleep(1)
+        daq.pwm_write(5, 0.25)
+        time.sleep(1)

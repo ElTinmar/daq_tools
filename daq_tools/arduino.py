@@ -155,8 +155,10 @@ if __name__ == "__main__":
         daq.digital_write(4, True)
         time.sleep(2)
         daq.digital_write(4, False)
+        time.sleep(1)
 
         # turn on everything
+        logging.info('Turn everything on')
         daq.pwm_write(3, 0.025)
         time.sleep(1)
         daq.digital_write(4, True)
