@@ -51,12 +51,15 @@ class SoftwareTimingDAQ(ABC):
         pass
 
     def pwm_read(self, channel: int) -> float:
+        # TODO read duty cycle
         pass
 
-    def counter_read(self, channel: int) -> float:
+    def counter_read(self, channel: int) -> int:
+        # TODO count edges
         pass
 
-    def counter_write(self, channel: int) -> float:
+    def counter_write(self, channel: int, val: int) -> None:
+        # TODO send clock / pulses train 
         pass
 
     @abstractmethod
