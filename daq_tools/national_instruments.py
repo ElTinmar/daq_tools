@@ -4,7 +4,7 @@ from nidaqmx.stream_readers import AnalogSingleChannelReader, DigitalSingleChann
 from nidaqmx.stream_writers import AnalogSingleChannelWriter, DigitalSingleChannelWriter
 import numpy as np
 from typing import List
-from .core import SoftwareTimingDAQ, BoardInfo
+from .core import SoftwareTimingDAQ, BoardInfo, HardwareTimingDAQ
 import logging
 logger = logging.getLogger(__name__)
 
@@ -98,9 +98,13 @@ class NI_SoftTiming(SoftwareTimingDAQ):
 #    data = np.zeros((1000,), dtype=np.float64)
 #    stream.read_many_sample(data, number_of_samples_per_channel=1000)
     
-class NI_HardTiming:
-    pass
+class NI_HardTiming(HardwareTimingDAQ):
+    
+    def get_chunk(self):
+        pass
 
+    def put_chunk(self):
+        pass
 
 if __name__ == "__main__":
 
