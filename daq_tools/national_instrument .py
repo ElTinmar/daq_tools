@@ -3,12 +3,60 @@ from nidaqmx.constants import AcquisitionType, READ_ALL_AVAILABLE
 from nidaqmx.stream_readers import AnalogSingleChannelReader, DigitalSingleChannelReader
 from nidaqmx.stream_writers import AnalogSingleChannelWriter, DigitalSingleChannelWriter
 import numpy as np
+from typing import List
+from .core import SoftwareTimingDAQ, BoardInfo
+import logging
+logger = logging.getLogger(__name__)
 
 # https://github.com/ni/nidaqmx-python/tree/master/examples 
 
-system = nidaqmx.system.System.local()
-for dev in system.devices:
-    print(dev.name)
+class NI_SoftTiming(SoftwareTimingDAQ):
+
+    def __init__(self, device_name: str) -> None:
+
+        super().__init__()
+
+        system = nidaqmx.system.System.local()
+
+        self._closed = False
+        logger.info(f"Connected to NI : ")
+        self.reset_state()
+
+    def analog_write(self, channel: int, val: float) -> None:
+        pass
+
+    def analog_read(self, channel: int) -> float:
+        pass
+
+    def digital_write(self, channel: int, val: bool) -> None:
+        pass
+
+    def digital_read(self, channel: int) -> bool:
+        pass
+
+    def pwm_write(self, channel: int, duty_cycle: float) -> None:
+        pass
+
+    def close(self) -> None:
+        if self._closed:
+            return 
+
+        logger.info("Closing NI card, setting outputs off")
+        self.reset_state()
+        self.device.close()
+        self._closed = True
+    
+    def reset_state(self):
+        # reset config 
+        # set outputs to zero
+        pass
+
+    @classmethod
+    def list_boards(cls) -> List[BoardInfo]:
+        system = nidaqmx.system.System.local()
+        for dev in system.devices:
+            print(dev.name)
+
 
 # analog read  two channels
 with nidaqmx.Task() as task:
@@ -51,3 +99,17 @@ with nidaqmx.Task() as task:
     stream = AnalogSingleChannelReader(task.in_stream)
     data = np.zeros((1000,), dtype=np.float64)
     stream.read_many_sample(data, number_of_samples_per_channel=1000)
+    
+
+
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+system = nidaqmx.system.System.local()
+for dev in system.devices:
+    pp.pprint(dev.name)
+    pp.pprint(dev.ai_physical_chans[:])
+    pp.pprint(dev.ao_physical_chans[:])
+    pp.pprint(dev.di_lines[:])
+    pp.pprint(dev.do_lines[:])
+    pp.pprint(dev.ci_physical_chans[:])
+    pp.pprint(dev.co_physical_chans[:])
