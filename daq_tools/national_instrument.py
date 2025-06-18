@@ -67,6 +67,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         self._closed = True
     
     def reset_state(self):
+        # TODO
         # reset config 
         # set outputs to zero
         pass
