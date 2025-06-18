@@ -9,7 +9,6 @@ class BoardInfo(NamedTuple):
     id: int
     name: str
 
-# maybe add counter, timer
 class DAQReadError(Exception):
     """Exception raised for errors in reading from the DAQ device."""
     pass
@@ -59,7 +58,7 @@ class SoftwareTimingDAQ(ABC):
         pass
 
     def counter_write(self, channel: int, val: int) -> None:
-        # TODO send clock / pulses train 
+        # TODO send clock  
         pass
 
     @abstractmethod
