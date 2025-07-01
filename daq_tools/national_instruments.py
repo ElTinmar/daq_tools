@@ -83,8 +83,13 @@ class NI_SoftTiming(SoftwareTimingDAQ):
 
     @classmethod
     def list_boards(cls) -> List[BoardInfo]:
-        system = nidaqmx.system.System.local()
         boards = []
+        
+        try:
+            system = nidaqmx.system.System.local()
+        except nidaqmx.errors.DaqNotFoundError:
+            return boards
+         
         for idx, dev in enumerate(system.devices):
             boards.append(BoardInfo(id=idx, name=dev.name))
 
