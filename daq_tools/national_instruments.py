@@ -87,12 +87,12 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         
         try:
             system = nidaqmx.system.System.local()
-        except nidaqmx.errors.DaqNotFoundError:
-            return boards
-         
-        for idx, dev in enumerate(system.devices):
-            boards.append(BoardInfo(id=idx, name=dev.name))
+            for idx, dev in enumerate(system.devices):
+                boards.append(BoardInfo(id=idx, name=dev.name))
 
+        except nidaqmx.errors.DaqNotFoundError:
+            pass
+    
         logger.debug(f"Found {len(boards)} supported NI board(s).")
         return boards
 
