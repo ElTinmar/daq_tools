@@ -13,5 +13,6 @@ setup(
         "labjackpython",
         "pyfirmata",
         "pyserial",
+        "nidaqmx"
     ]
 )
