@@ -3,6 +3,7 @@ from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
 from typing import List, Optional
 import logging
+
 logger = logging.getLogger(__name__)
 
 SUPPORTED_ARDUINO_BOARDS = {
