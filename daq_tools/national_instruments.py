@@ -91,6 +91,8 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         logger.debug(f"Found {len(boards)} supported NI board(s).")
         return boards
 
+# TODO Work in progress ---
+
 # stream
 #with nidaqmx.Task() as task:
 #    task.ai_channels.add_ai_voltage_chan("NIPCI-6110/ai0", min_val=-10.0, max_val=10.0)
@@ -105,6 +107,8 @@ class NI_HardTiming(HardwareTimingDAQ):
 
     def put_chunk(self):
         pass
+
+# ----- Work in progress
 
 if __name__ == "__main__":
 
