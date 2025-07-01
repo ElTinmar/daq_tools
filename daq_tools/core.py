@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import NamedTuple, List
+from typing import NamedTuple, List, Union
 import threading
 import time
 import logging
 logger = logging.getLogger(__name__)
 
 class BoardInfo(NamedTuple):
-    id: int
+    id: Union[int, str]
     name: str
 
 class DAQReadError(Exception):
