@@ -126,7 +126,6 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         value = int(65535*(1-duty_cycle))
 
         # Configure the timer for 16-bit PWM
-        print(value)
         self.device.writeRegister(self.TIMER_CONFIG + (channel_offset*2), [self.TIMER_MODE_16BIT, value]) 
 
     def close(self) -> None:
