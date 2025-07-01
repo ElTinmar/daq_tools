@@ -3,6 +3,23 @@ common interface for data acquisition hardware control
 
 ## Installation
 
+### Conda
+
+```bash
+git clone https://github.com/ElTinmar/daq_tools.git
+cd daq_tools
+conda env create -f daq_tools.yml
+conda activate daq_tools
+```
+
+### Pip
+
+```bash
+pip install git+https://github.com/ElTinmar/daq_tools.git@main
+```
+
+## Dependencies
+
 On linux make sure you're part of group dialout:
 ```bash
 groups | grep dialout
@@ -54,27 +71,12 @@ avrdude: jtagmkII_getsync(): sign-on command: status -1
 
 try setting baudrate to 1200 in serial monitor and restart upload
 
-## NI
+### National Instruments
 
 Works on Ubuntu 24.04 (couldn't get it to install on 25.04, maybe need older kernel)
 
 ```bash
 sudo /path/to/python -m nidaqmx installdrivers
-```
-
-### Conda
-
-```bash
-git clone https://github.com/ElTinmar/daq_tools.git
-cd daq_tools
-conda env create -f daq_tools.yml
-conda activate daq_tools
-```
-
-### Pip
-
-```bash
-pip install git+https://github.com/ElTinmar/daq_tools.git@main
 ```
 
 ## Example
@@ -86,7 +88,8 @@ from daq_tools import Arduino_SoftTiming
 print(Arduino_SoftTiming.list_boards())
 ```
 
-Turn on and off digital pin 
+Turn on and off digital pin
+
 ```python
 import time
 from daq_tools import Arduino_SoftTiming
@@ -99,6 +102,7 @@ daq.close()
 ```
 
 Alternatively you can use a context manager
+
 ```python
 import time
 from daq_tools import Arduino_SoftTiming
