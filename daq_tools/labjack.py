@@ -68,18 +68,14 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
     TIMER_MODE_16BIT = 0
     TIMER_MODE_8BIT = 1
 
-    class Clock(NamedTuple):
-        register: int
-        frequency_Hz: int
-
     CLOCK_BASE = {
-        '4MHz': Clock(0, 4_000_000),
-        '12MHz': Clock(1, 12_000_000),
-        '48MHz(Default)': Clock(2, 48_000_000),
-        '1MHz/Divisor': Clock(3, 1_000_000),
-        '4MHz/Divisor': Clock(4, 4_000_000),
-        '12MHz/Divisor': Clock(5, 12_000_000),
-        '48MHz/Divisor': Clock(6, 48_000_000)
+        '4MHz': 0,
+        '12MHz': 1,
+        '48MHz(Default)': 2,
+        '1MHz/Divisor': 3,
+        '4MHz/Divisor': 4,
+        '12MHz/Divisor': 5,
+        '48MHz/Divisor': 6
     }
 
     def __init__(self, serial_number: int) -> None:
@@ -130,6 +126,7 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         value = int(65535*(1-duty_cycle))
 
         # Configure the timer for 16-bit PWM
+        print(value)
         self.device.writeRegister(self.TIMER_CONFIG + (channel_offset*2), [self.TIMER_MODE_16BIT, value]) 
 
     def close(self) -> None:
@@ -147,7 +144,7 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
 
         self.device.writeRegister(self.NUM_TIMER_ENABLED, 2) 
         self.device.writeRegister(self.TIMER_PIN_OFFSET, 4) 
-        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)'].register) 
+        self.device.writeRegister(self.TIMER_CLOCK_BASE, self.CLOCK_BASE['48MHz(Default)']) 
         self.device.writeRegister(self.TIMER_CLOCK_DIVISOR, 0) 
 
         logger.info("Resetting all output pins to LOW")
