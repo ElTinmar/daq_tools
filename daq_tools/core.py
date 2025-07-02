@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import NamedTuple, List, Union
+from typing import NamedTuple, List, Union, Dict
 import threading
 import time
 import logging
@@ -102,6 +102,17 @@ class SoftwareTimingDAQ(ABC):
     @abstractmethod
     def list_pwm_input_channels(self) -> List[int]:
         pass
+
+    def list_channels(self) -> Dict:
+        channels = {
+            'analog_output': self.list_analog_output_channels(),
+            'analog_input': self.list_analog_input_channels(),
+            'digital_output': self.list_digital_output_channels(),
+            'digital_input': self.list_digital_input_channels(),
+            'pwm_output': self.list_pwm_output_channels(),
+            'pwm_input': self.list_pwm_input_channels()
+        }
+        return channels
 
     @classmethod
     @abstractmethod
