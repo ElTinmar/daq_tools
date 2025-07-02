@@ -195,7 +195,7 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         return [idx for idx, reg in enumerate(self.channels['DigitalInputOutput']) if idx not in self.pwm_pins]
     
     def list_digital_output_channels(self) -> List[int]:
-        return self.list_digital_input_channels(0)
+        return self.list_digital_input_channels()
 
     def list_pwm_output_channels(self) -> List[int]:
         return self.pwm_pins
