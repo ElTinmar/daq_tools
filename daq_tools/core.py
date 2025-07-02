@@ -58,7 +58,7 @@ class SoftwareTimingDAQ(ABC):
         pass
 
     def counter_write(self, channel: int, val: int) -> None:
-        # TODO send clock  
+        # TODO send clock at a given frequency
         pass
 
     @abstractmethod
@@ -77,6 +77,30 @@ class SoftwareTimingDAQ(ABC):
     @abstractmethod
     def reset_state(self) -> None:
         """Set all output pins to LOW"""
+        pass
+
+    @abstractmethod
+    def list_analog_output_channels(self) -> List[int]:
+        pass
+
+    @abstractmethod
+    def list_analog_input_channels(self) -> List[int]:
+        pass
+
+    @abstractmethod
+    def list_digital_input_channels(self) -> List[int]:
+        pass
+    
+    @abstractmethod
+    def list_digital_output_channels(self) -> List[int]:
+        pass
+
+    @abstractmethod
+    def list_pwm_output_channels(self) -> List[int]:
+        pass
+
+    @abstractmethod
+    def list_pwm_input_channels(self) -> List[int]:
         pass
 
     @classmethod

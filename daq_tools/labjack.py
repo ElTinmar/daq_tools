@@ -128,6 +128,18 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         # Configure the timer for 16-bit PWM
         self.device.writeRegister(self.TIMER_CONFIG + (channel_offset*2), [self.TIMER_MODE_16BIT, value]) 
 
+    def pwm_read(self, channel: int) -> float:
+        # TODO read duty cycle 
+        pass
+
+    def counter_read(self, channel: int) -> int:
+        # TODO count edges
+        pass
+
+    def counter_write(self, channel: int, val: int) -> None:
+        # TODO send clock at a given frequency
+        pass
+
     def close(self) -> None:
         if self._closed:
             return  
@@ -172,6 +184,25 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
 
         logger.debug(f"Found {len(boards)} supported U3 board(s).")
         return boards
+
+    def list_analog_output_channels(self) -> List[int]:
+        return [idx for idx, reg in enumerate(self.channels['AnalogOutput'])]
+
+    def list_analog_input_channels(self) -> List[int]:
+        return [idx for idx, reg in enumerate(self.channels['AnalogInput'])]
+
+    def list_digital_input_channels(self) -> List[int]:
+        return [idx for idx, reg in enumerate(self.channels['DigitalInputOutput']) if idx not in self.pwm_pins]
+    
+    def list_digital_output_channels(self) -> List[int]:
+        return self.list_digital_input_channels(0)
+
+    def list_pwm_output_channels(self) -> List[int]:
+        return self.pwm_pins
+
+    def list_pwm_input_channels(self) -> List[int]:
+        # TODO: not implemented yet
+        return []
 
 # TODO Labjack in streaming mode
 # Labjack can only stream analog inputs

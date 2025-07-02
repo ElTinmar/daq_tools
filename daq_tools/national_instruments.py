@@ -96,6 +96,24 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         logger.debug(f"Found {len(boards)} supported NI board(s).")
         return boards
 
+    def list_analog_output_channels(self) -> List[int]:
+        pass
+
+    def list_analog_input_channels(self) -> List[int]:
+        pass
+
+    def list_digital_input_channels(self) -> List[int]:
+        pass
+    
+    def list_digital_output_channels(self) -> List[int]:
+        pass
+
+    def list_pwm_output_channels(self) -> List[int]:
+        pass
+
+    def list_pwm_input_channels(self) -> List[int]:
+        pass
+    
 # TODO Work in progress ---
 
 # stream

@@ -126,6 +126,24 @@ class Arduino_SoftTiming(SoftwareTimingDAQ):
 
         logger.debug(f"Found {len(boards)} supported Arduino board(s).")
         return boards
+    
+    def list_analog_output_channels(self) -> List[int]:
+        return []
+
+    def list_analog_input_channels(self) -> List[int]:
+        return [idx for idx, pin in enumerate(self.device.analog)]
+    
+    def list_digital_input_channels(self) -> List[int]:
+        return [idx for idx, pin in enumerate(self.device.digital) if not pin.PWM_CAPABLE]
+    
+    def list_digital_output_channels(self) -> List[int]:
+        return self.list_digital_input_channels()
+
+    def list_pwm_output_channels(self) -> List[int]:
+        return [idx for idx, pin in enumerate(self.device.digital) if pin.PWM_CAPABLE]
+
+    def list_pwm_input_channels(self) -> List[int]:
+        return []
         
 if __name__ == "__main__":
 
