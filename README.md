@@ -75,8 +75,15 @@ try setting baudrate to 1200 in serial monitor and restart upload
 
 Works on Ubuntu 24.04 (couldn't get it to install on 25.04, maybe need older kernel)
 
+Get python path
+
 ```bash
-sudo /path/to/python -m nidaqmx installdrivers
+conda activate daq_tools
+which python
+```
+
+```bash
+sudo /path/to/python -m nidaqmx installdriver
 ```
 
 ## Example
