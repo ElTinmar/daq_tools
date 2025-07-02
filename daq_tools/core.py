@@ -155,6 +155,24 @@ class SoftwareTimingDAQ(ABC):
         else:
             threading.Thread(target=do_pwm_pulse, daemon=True).start()
 
+    def analog_pulse(
+            self,
+            channel: int,
+            duration: float,
+            value: float,
+            blocking: bool = True
+        ) -> None:
+        
+        def do_analog_pulse():
+            self.analog_write(channel, value)
+            time.sleep(duration)
+            self.analog_write(channel, 0.0)  
+
+        if blocking:
+            do_analog_pulse()
+        else:
+            threading.Thread(target=do_analog_pulse, daemon=True).start()
+
     def __enter__(self):   
         return self
 
