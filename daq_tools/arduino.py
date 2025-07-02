@@ -122,7 +122,18 @@ class Arduino_SoftTiming(SoftwareTimingDAQ):
             vid = f"{port.vid:04x}" if port.vid else None
             pid = f"{port.pid:04x}" if port.pid else None
             if (vid, pid) in SUPPORTED_ARDUINO_BOARDS:
-                boards.append(BoardInfo(id=port.device, name=port.description))
+                with cls(port.device) as arduino:
+                    boards.append(BoardInfo(
+                        id = port.device, 
+                        name = port.description,
+                        board_type = 'arduino',
+                        analog_input = arduino.list_analog_input_channels(),
+                        analog_output = arduino.list_analog_output_channels(),
+                        digital_input = arduino.list_digital_input_channels(),
+                        digital_output = arduino.list_digital_output_channels(),
+                        pwm_input = arduino.list_pwm_input_channels(),
+                        pwm_output = arduino.list_pwm_output_channels()
+                    ))
 
         logger.debug(f"Found {len(boards)} supported Arduino board(s).")
         return boards

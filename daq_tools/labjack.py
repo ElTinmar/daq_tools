@@ -180,7 +180,18 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         u3s = listAll(3) # get all U3 boards
         boards = []
         for id, info in u3s.items():
-            boards.append(BoardInfo(id=info['serialNumber'], name=info['deviceName']))
+            with cls(info['serialNumber']) as labjack:
+                boards.append(BoardInfo(
+                    id = info['serialNumber'], 
+                    name = info['deviceName'],
+                    board_type = 'labjack',
+                    analog_input = labjack.list_analog_input_channels(),
+                    analog_output = labjack.list_analog_output_channels(),
+                    digital_input = labjack.list_digital_input_channels(),
+                    digital_output = labjack.list_digital_output_channels(),
+                    pwm_input = labjack.list_pwm_input_channels(),
+                    pwm_output = labjack.list_pwm_output_channels()
+                ))
 
         logger.debug(f"Found {len(boards)} supported U3 board(s).")
         return boards

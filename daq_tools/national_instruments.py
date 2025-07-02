@@ -88,7 +88,18 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         try:
             system = nidaqmx.system.System.local()
             for idx, dev in enumerate(system.devices):
-                boards.append(BoardInfo(id=idx, name=dev.name))
+                with cls(idx) as ni:
+                    boards.append(BoardInfo(
+                        id = idx, 
+                        name = dev.name,
+                        board_type = 'national_instrument',
+                        analog_input = ni.list_analog_input_channels(),
+                        analog_output = ni.list_analog_output_channels(),
+                        digital_input = ni.list_digital_input_channels(),
+                        digital_output = ni.list_digital_output_channels(),
+                        pwm_input = ni.list_pwm_input_channels(),
+                        pwm_output = ni.list_pwm_output_channels()
+                    ))
 
         except nidaqmx.errors.DaqNotFoundError:
             pass
