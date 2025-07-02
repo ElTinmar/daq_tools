@@ -78,6 +78,7 @@ Works on Ubuntu 24.04 (couldn't get it to install on 25.04, maybe need older ker
 ```bash
 conda activate daq_tools
 sudo $(which python) -m nidaqmx installdriver
+sudo apt install ni-hwcfg-utility
 ```
 
 ## Example
