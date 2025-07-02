@@ -97,22 +97,22 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         return boards
 
     def list_analog_output_channels(self) -> List[int]:
-        pass
+        return [idx for idx, chan in enumerate(self.device.ao_physical_chans)]
 
     def list_analog_input_channels(self) -> List[int]:
-        pass
+        return [idx for idx, chan in enumerate(self.device.ai_physical_chans)]
 
     def list_digital_input_channels(self) -> List[int]:
-        pass
-    
+        return [idx for idx, chan in enumerate(self.device.di_lines)]
+
     def list_digital_output_channels(self) -> List[int]:
-        pass
+        return [idx for idx, chan in enumerate(self.device.do_lines)]
 
     def list_pwm_output_channels(self) -> List[int]:
-        pass
+        return [idx for idx, chan in enumerate(self.device.co_physical_chans)]
 
     def list_pwm_input_channels(self) -> List[int]:
-        pass
+        return [idx for idx, chan in enumerate(self.device.ci_physical_chans)]
     
 # TODO Work in progress ---
 
