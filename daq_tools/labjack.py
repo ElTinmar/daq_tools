@@ -150,7 +150,10 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         
         for channel in range(len(self.channels['DigitalInputOutput'])):
             try:
-                self.digital_write(channel, False)
+                if channel in self.pwm_pins:
+                    self.pwm_write(channel, 0)
+                else:
+                    self.digital_write(channel, False)
             except Exception as e:
                 logger.warning(f"Failed to reset digital channel {channel}: {e}")
 
