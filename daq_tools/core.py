@@ -12,6 +12,9 @@ class BoardType(IntEnum):
     LABJACK = 1
     NATIONAL_INSTRUMENTS = 2
 
+    def __str__(self) -> str:
+        return self.name
+
 class BoardInfo(NamedTuple):
     id: Union[int, str]
     name: str
