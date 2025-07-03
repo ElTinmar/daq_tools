@@ -4,7 +4,7 @@ setup(
     name='daq_tools',
     python_requires='>=3.8',
     author='Martin Privat',
-    version='0.1.8',
+    version='0.1.9',
     packages=['daq_tools'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     description='control software and hardware timed DAQ',
