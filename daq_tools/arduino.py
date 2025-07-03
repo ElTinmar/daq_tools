@@ -1,4 +1,4 @@
-from .core import SoftwareTimingDAQ, DAQReadError, BoardInfo
+from .core import SoftwareTimingDAQ, DAQReadError, BoardInfo, BoardType
 from pyfirmata import Arduino, INPUT, OUTPUT, PWM
 from serial.tools import list_ports
 from typing import List, Optional
@@ -126,7 +126,7 @@ class Arduino_SoftTiming(SoftwareTimingDAQ):
                     boards.append(BoardInfo(
                         id = port.device, 
                         name = port.description,
-                        board_type = 'arduino',
+                        board_type = BoardType.ARDUINO,
                         analog_input = arduino.list_analog_input_channels(),
                         analog_output = arduino.list_analog_output_channels(),
                         digital_input = arduino.list_digital_input_channels(),

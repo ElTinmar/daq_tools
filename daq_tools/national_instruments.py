@@ -4,7 +4,7 @@ from nidaqmx.stream_readers import AnalogSingleChannelReader, DigitalSingleChann
 from nidaqmx.stream_writers import AnalogSingleChannelWriter, DigitalSingleChannelWriter
 import numpy as np
 from typing import List
-from .core import SoftwareTimingDAQ, BoardInfo, HardwareTimingDAQ
+from .core import SoftwareTimingDAQ, BoardInfo, HardwareTimingDAQ, BoardType
 import logging
 logger = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
                     boards.append(BoardInfo(
                         id = idx, 
                         name = dev.name,
-                        board_type = 'national_instrument',
+                        board_type = BoardType.NATIONAL_INSTRUMENTS,
                         analog_input = ni.list_analog_input_channels(),
                         analog_output = ni.list_analog_output_channels(),
                         digital_input = ni.list_digital_input_channels(),

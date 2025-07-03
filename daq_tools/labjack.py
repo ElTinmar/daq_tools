@@ -1,4 +1,4 @@
-from .core import SoftwareTimingDAQ, BoardInfo
+from .core import SoftwareTimingDAQ, BoardInfo, BoardType
 import u3
 from LabJackPython import listAll
 from typing import NamedTuple, List
@@ -184,7 +184,7 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
                 boards.append(BoardInfo(
                     id = info['serialNumber'], 
                     name = info['deviceName'],
-                    board_type = 'labjack',
+                    board_type = BoardType.LABJACK,
                     analog_input = labjack.list_analog_input_channels(),
                     analog_output = labjack.list_analog_output_channels(),
                     digital_input = labjack.list_digital_input_channels(),

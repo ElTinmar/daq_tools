@@ -3,13 +3,19 @@ from typing import NamedTuple, List, Union, Dict
 import threading
 import time
 import logging
+from enum import IntEnum
 
 logger = logging.getLogger(__name__)
+
+class BoardType(IntEnum):
+    ARDUINO = 0
+    LABJACK = 1
+    NATIONAL_INSTRUMENTS = 2
 
 class BoardInfo(NamedTuple):
     id: Union[int, str]
     name: str
-    board_type: str
+    board_type: BoardType
     analog_output: List[int]
     analog_input: List[int]
     digital_output: List[int]
