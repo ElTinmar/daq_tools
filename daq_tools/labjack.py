@@ -78,11 +78,11 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         '48MHz/Divisor': 6
     }
 
-    def __init__(self, serial_number: int) -> None:
+    def __init__(self, *args, **kwargs) -> None:
 
-        super().__init__()
+        super().__init__(*args, **kwargs)
         
-        self.device = u3.U3(serial = serial_number)
+        self.device = u3.U3(serial = self.board_id)
         logger.info(f"Connected to LabJack U3 S/N: {self.device.serialNumber}")
         self.pwm_pins = {4, 5}
         self._closed = False
@@ -209,7 +209,7 @@ class LabJackU3_SoftTiming(SoftwareTimingDAQ):
         return self.list_digital_input_channels()
 
     def list_pwm_output_channels(self) -> List[int]:
-        return self.pwm_pins
+        return list(self.pwm_pins)
 
     def list_pwm_input_channels(self) -> List[int]:
         # TODO: not implemented yet

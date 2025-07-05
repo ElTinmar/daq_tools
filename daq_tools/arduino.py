@@ -16,12 +16,12 @@ SUPPORTED_ARDUINO_BOARDS = {
 
 class Arduino_SoftTiming(SoftwareTimingDAQ):
 
-    def __init__(self, board_id: str) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
         try:
-            self.device = Arduino(board_id)
+            self.device = Arduino(self.board_id)
             logger.info(f"Connected to Arduino board: {self.device.name}")
         except Exception as e:
             logger.error(f"Failed to connect to Arduino board: {e}")

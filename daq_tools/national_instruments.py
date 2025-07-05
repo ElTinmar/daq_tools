@@ -13,17 +13,18 @@ logger = logging.getLogger(__name__)
 class NI_SoftTiming(SoftwareTimingDAQ):
 
     def __init__(
-            self, 
-            device_index: int, 
-            pwm_frequency: float = 1000
+            self,  
+            pwm_frequency: float = 1000,
+            *args,
+            **kwargs
         ) -> None:
 
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
         self.pwm_frequency = pwm_frequency
 
         system = nidaqmx.system.System.local()
-        self.device = system.devices[device_index] 
+        self.device = system.devices[self.board_id] 
         self._closed = False
         logger.info(f"Connected to NI: {self.device.name}")
         self.reset_state()

@@ -52,6 +52,9 @@ class SoftwareTimingDAQ(ABC):
     where precise pulse timing and latency guarantees are required.
     """
 
+    def __init__(self, board_id: Union[str, int]) -> None:
+        self.board_id = board_id
+
     @abstractmethod
     def digital_read(self, channel: int) -> float:
         # TODO: ideally you would like to specify PULL_UP / PULL_DOWN vs FLOATING
