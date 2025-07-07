@@ -89,7 +89,7 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         try:
             system = nidaqmx.system.System.local()
             for idx, dev in enumerate(system.devices):
-                with cls(idx) as ni:
+                with cls(board_id = idx) as ni:
                     boards.append(BoardInfo(
                         id = idx, 
                         name = dev.name,
