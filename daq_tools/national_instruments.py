@@ -22,10 +22,9 @@ class NI_SoftTiming(SoftwareTimingDAQ):
         super().__init__(*args, **kwargs)
 
         self.pwm_frequency = pwm_frequency
-
+        self._closed = False
         system = nidaqmx.system.System.local()
         self.device = system.devices[self.board_id] 
-        self._closed = False
         logger.info(f"Connected to NI: {self.device.name}")
         self.reset_state()
 
