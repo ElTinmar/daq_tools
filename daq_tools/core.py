@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import NamedTuple, List, Union, Dict
+from typing import List, Union
 import threading
 import time
 import logging
 from enum import IntEnum
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -11,20 +12,22 @@ class BoardType(IntEnum):
     ARDUINO = 0
     LABJACK = 1
     NATIONAL_INSTRUMENTS = 2
+    NONE = -1
 
     def __str__(self) -> str:
         return self.name
 
-class BoardInfo(NamedTuple):
-    id: Union[int, str]
-    name: str
-    board_type: BoardType
-    analog_output: List[int]
-    analog_input: List[int]
-    digital_output: List[int]
-    digital_input: List[int]
-    pwm_output: List[int]
-    pwm_input: List[int]
+@dataclass
+class BoardInfo:
+    id: Union[int, str] = -1
+    name: str = ''
+    board_type: BoardType = BoardType.NONE
+    analog_output: List[int] = field(default_factory = list)
+    analog_input: List[int] = field(default_factory = list)
+    digital_output: List[int] = field(default_factory = list)
+    digital_input: List[int] = field(default_factory = list)
+    pwm_output: List[int] = field(default_factory = list)
+    pwm_input: List[int] = field(default_factory = list)
 
 class DAQReadError(Exception):
     """Exception raised for errors in reading from the DAQ device."""
