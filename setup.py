@@ -4,14 +4,14 @@ setup(
     name='daq_tools',
     python_requires='>=3.8',
     author='Martin Privat',
-    version='0.1.19',
+    version='0.1.20',
     packages=['daq_tools'],
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     description='control software and hardware timed DAQ',
     long_description=open('README.md').read(),
     install_requires=[
         "labjackpython",
-        "pyfirmata",
+        "pyFirmata @ git+https://github.com/tino/pyFirmata.git",
         "pyserial",
         "nidaqmx"
     ]
